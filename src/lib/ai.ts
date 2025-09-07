@@ -4,8 +4,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
  * Initialize and return a Gemini AI client
  * @returns GoogleGenerativeAI instance
  */
-export function getGeminiClient(): GoogleGenerativeAI {
-  const { env } = require('@/env');
+export async function getGeminiClient(): Promise<GoogleGenerativeAI> {
+  const { env } = await import('@/env');
   
   if (!env.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY environment variable is not set');
@@ -21,7 +21,7 @@ export function getGeminiClient(): GoogleGenerativeAI {
  */
 export async function summarizeText(text: string): Promise<string> {
   try {
-    const genAI = getGeminiClient();
+    const genAI = await getGeminiClient();
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `

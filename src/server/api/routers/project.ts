@@ -321,4 +321,64 @@ export const projectRouter = createTRPCRouter({
         throw new Error(`Failed to poll commits: ${error.message}`);
       }
     }),
+
+  loadRepositoryFiles: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        extensions: z.array(z.string()).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      if (!project.githubUrl) {
+        throw new Error("Project does not have a GitHub URL");
+      }
+
+      // Import the GitHub loader functions
+      const { loadGitHubRepositoryByExtensions, getRepositoryStats } = await import("@/lib/github-loader");
+      const { env } = await import("@/env");
+      
+      try {
+        const extensions = input.extensions || ['.ts', '.tsx', '.js', '.jsx', '.py', '.md', '.json'];
+        const documents = await loadGitHubRepositoryByExtensions(
+          project.githubUrl, 
+          env.GITHUB_TOKEN,
+          extensions
+        );
+        
+        const stats = getRepositoryStats(documents);
+        
+        // Return the documents with stats
+        return {
+          files: documents.map(doc => ({
+            path: doc.metadata?.source || '',
+            content: doc.pageContent || '',
+            size: doc.pageContent?.length || 0,
+            lines: doc.pageContent?.split('\n').length || 0,
+          })),
+          stats,
+          repository: project.githubUrl,
+        };
+      } catch (error: any) {
+        console.error("Failed to load repository files:", error);
+        throw new Error(`Failed to load repository files: ${error.message}`);
+      }
+    }),
 });

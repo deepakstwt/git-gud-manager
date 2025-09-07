@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import RepositoryLoader from "@/components/repository-loader";
 import { 
   RefreshCw, 
   ExternalLink, 
@@ -157,9 +158,11 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
       console.log('Polling result:', result);
       
       if (result.processed > 0) {
+        // Invalidate and refetch the commits cache
+        await utils.project.getCommits.invalidate({ projectId: project.id });
         // Refresh the commits display
         await fetchCommits();
-        alert(`✅ Successfully processed ${result.processed} new commits!`);
+        alert(`✅ Successfully processed ${result.processed} new commits with AI summaries!`);
       } else {
         alert('ℹ️ No new commits found to process.');
       }
@@ -599,6 +602,11 @@ const DashboardPage = () => {
       {/* Commit Log Section */}
       <div className="mt-8">
         <CommitLog project={project} />
+      </div>
+
+      {/* Repository Loader Section */}
+      <div className="mt-8">
+        <RepositoryLoader />
       </div>
 
       {/* Project Details Card (Additional Info) */}
