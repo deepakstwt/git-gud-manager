@@ -237,6 +237,7 @@ export async function queryRAGSystem(
   sources: Array<{
     fileName: string;
     summary: string;
+    sourceCode: string;
     similarity: number;
   }>;
 }> {
@@ -251,6 +252,7 @@ export async function queryRAGSystem(
       SELECT 
         "fileName",
         "summary",
+        "source" as "sourceCode",
         1 - (embedding <=> ${questionEmbedding as any}::vector) as similarity
       FROM "SourceCodeEmbedding"
       WHERE "projectId" = ${projectId}
@@ -260,6 +262,7 @@ export async function queryRAGSystem(
     ` as Array<{
       fileName: string;
       summary: string;
+      sourceCode: string;
       similarity: number;
     }>;
 
@@ -267,7 +270,7 @@ export async function queryRAGSystem(
 
     // Step 3: Generate answer using retrieved context
     const { generateRAGAnswer } = await import('./embeddings');
-    const context = similarDocs.map(doc => `File: ${doc.fileName}\nSummary: ${doc.summary}`);
+    const context = similarDocs.map(doc => `File: ${doc.fileName}\nSummary: ${doc.summary}\nCode snippet:\n${doc.sourceCode.slice(0, 1000)}...`);
     const answer = await generateRAGAnswer(question, context);
 
     return {
