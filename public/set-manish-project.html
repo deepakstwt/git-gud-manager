@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Manish Project</title>
+</head>
+<body>
+    <h1>Setting Manish Project in Local Storage</h1>
+    <p>This will set the manish project as selected in the dashboard.</p>
+    
+    <script>
+        // Set the manish project ID in local storage
+        const manishProjectId = 'cmf9n3gux0002ph3c73jiq93t';
+        localStorage.setItem('dionysus-projectId', JSON.stringify(manishProjectId));
+        
+        console.log('✅ Set manish project ID in local storage:', manishProjectId);
+        
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 2000);
+        
+        document.body.innerHTML += '<p style="color: green;">✅ Manish project selected! Redirecting to dashboard...</p>';
+    </script>
+</body>
+</html>

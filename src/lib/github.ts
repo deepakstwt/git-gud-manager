@@ -436,17 +436,11 @@ export async function pollCommits(projectId: string): Promise<{ processed: numbe
     
     console.log(`🆕 Processing ${newCommits.length} new commits with AI summarization...`);
     
-    // Step 4: For each unprocessed commit, get diff and summarize with Gemini
-    const { summarizeCommit } = await import('@/lib/gemini');
-    
     // Process commits concurrently with Promise.allSettled
     const commitProcessingPromises = newCommits.map(async (commit) => {
       try {
-        // Step 4a: Get the commit diff via getCommitDiff
-        const diff = await getCommitDiff(githubUrl, commit.commitHash, env.GITHUB_TOKEN);
-        
-        // Step 4b: Call summarizeCommit(diff) to generate AI summary
-        const summary = await summarizeCommit(diff);
+        // Use the local summarizeCommit function which handles everything
+        const summary = await summarizeCommit(githubUrl, commit.commitHash, commit.commitMessage, env.GITHUB_TOKEN);
         
         return {
           ...commit,
@@ -457,7 +451,7 @@ export async function pollCommits(projectId: string): Promise<{ processed: numbe
         console.error(`Failed to process commit ${commit.commitHash.substring(0, 7)}:`, error);
         return {
           ...commit,
-          summary: "", // Default to empty string if summary fails
+          summary: generateBasicCommitSummary(commit.commitMessage), // Use fallback summary
           success: false
         };
       }
