@@ -34,9 +34,21 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/**/*.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "test-*.js",
+    "test-*.mjs",
+    "test-*.cjs",
+    "check-*.mjs",
+    "get-*.mjs",
+    "delete-*.mjs",
+    "final-*.mjs",
+    "view-*.mjs",
+    "verify-*.mjs",
+    "*.config.js",
+    "*.config.mjs"
+  ]
 }
