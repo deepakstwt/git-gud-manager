@@ -18,6 +18,7 @@ export async function loadGitHubRepository(
       ignoreFiles: ["package-lock.json", "pnpm-lock.yaml", "bun.lockb"],
       recursive: true,
       unknown: "warn",
+      maxConcurrency: 5,
     });
 
     // Load all files and their contents

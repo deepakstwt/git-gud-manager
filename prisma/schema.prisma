@@ -3,11 +3,13 @@
 
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
+    extensions = [pgvector(map: "vector")]
 }
 
 
@@ -39,6 +41,8 @@ model Project {
   deletedAt DateTime?
   UserToProjects UserToProject[]
   commits   Comment[]
+  documents Document[]
+  sourceCodeEmbeddings SourceCodeEmbedding[]
 }
 
 model UserToProject {
@@ -71,5 +75,41 @@ model Comment {
   project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, commitHash])
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId   String
+  fileName    String
+  filePath    String
+  summary     String   @db.Text
+  content     String   @db.Text
+  embedding   String?  @db.Text  // JSON string of embedding vector
+  
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, fileName])
+  @@index([projectId])
+}
+
+model SourceCodeEmbedding {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  fileName  String
+  filePath  String
+  summary   String   @db.Text
+  source    String   @db.Text
+  embedding Unsupported("vector(768)")? // PGVector column (768 dimensions for Gemini embeddings)
+  
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, fileName])
+  @@index([projectId])
 }
 

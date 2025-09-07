@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import RepositoryLoader from "@/components/repository-loader";
+import { EnhancedRAGComponent } from "@/components/enhanced-rag";
 import { 
   RefreshCw, 
   ExternalLink, 
@@ -28,7 +29,7 @@ import {
   FileText,
   Clock
 } from "lucide-react";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
 
@@ -58,12 +59,6 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
     setGithubUrl(project?.githubUrl || '');
   }, [project]);
 
-  useEffect(() => {
-    if (project?.id) {
-      fetchCommits();
-    }
-  }, [project?.id]);
-
   const handleSaveGithubUrl = () => {
     if (project?.id) {
       updateProject.mutate({
@@ -73,7 +68,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
     }
   };
 
-  const fetchCommits = async () => {
+  const fetchCommits = useCallback(async () => {
     if (!project?.id) return;
     
     setLoading(true);
@@ -137,7 +132,13 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [project?.id, project?.githubUrl, utils.project.getCommits, utils.project.fetchCommitsFromGithub]);
+
+  useEffect(() => {
+    if (project?.id) {
+      fetchCommits();
+    }
+  }, [project?.id, fetchCommits]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -354,7 +355,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
                         <span className="text-blue-700 font-medium">AI Summary</span>
                       </div>
                       <p className="text-blue-600">
-                        No AI summary available. Use "Poll Commits" to generate summaries for this commit.
+                        No AI summary available. Use &quot;Poll Commits&quot; to generate summaries for this commit.
                       </p>
                     </div>
                   )}
@@ -607,6 +608,14 @@ const DashboardPage = () => {
       {/* Repository Loader Section */}
       <div className="mt-8">
         <RepositoryLoader />
+      </div>
+
+      {/* RAG Pipeline Section */}
+      <div className="mt-8">
+        <EnhancedRAGComponent 
+          projectId={project.id} 
+          projectName={project.name}
+        />
       </div>
 
       {/* Project Details Card (Additional Info) */}
