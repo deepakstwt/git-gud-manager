@@ -110,7 +110,7 @@ export const ragRouter = createTRPCRouter({
     }),
 
   /**
-   * Query the PGVector RAG system
+   * Query the PGVector RAG system and persist Q&A
    */
   queryPGVector: protectedProcedure
     .input(z.object({
@@ -118,8 +118,93 @@ export const ragRouter = createTRPCRouter({
       question: z.string().min(1),
       topK: z.number().min(1).max(20).default(5),
     }))
-    .mutation(async ({ input }) => {
-      return await queryRAGSystem(input.projectId, input.question, input.topK);
+    .mutation(async ({ input, ctx }) => {
+      const result = await queryRAGSystem(input.projectId, input.question, input.topK);
+      
+      // Persist the Q&A in database
+      try {
+        await ctx.db.question.create({
+          data: {
+            projectId: input.projectId,
+            text: input.question,
+            answer: result.answer,
+            fileReferences: result.sources.map(source => ({
+              fileName: source.fileName,
+              summary: source.summary,
+              sourceCode: source.sourceCode || '', // Include source code if available
+              similarity: source.similarity,
+            })),
+          },
+        });
+      } catch (error) {
+        console.error('Failed to persist Q&A:', error);
+        // Continue even if persistence fails
+      }
+      
+      return result;
+    }),
+
+  /**
+   * Get Q&A history for a project
+   */
+  getQuestionHistory: protectedProcedure
+    .input(z.object({
+      projectId: z.string(),
+      limit: z.number().min(1).max(50).default(10),
+      offset: z.number().min(0).default(0),
+    }))
+    .query(async ({ input, ctx }) => {
+      const questions = await ctx.db.question.findMany({
+        where: { projectId: input.projectId },
+        orderBy: { createdAt: 'desc' },
+        take: input.limit,
+        skip: input.offset,
+        select: {
+          id: true,
+          text: true,
+          answer: true,
+          fileReferences: true,
+          createdAt: true,
+        },
+      });
+
+      const total = await ctx.db.question.count({
+        where: { projectId: input.projectId },
+      });
+
+      return {
+        questions,
+        total,
+        hasMore: total > input.offset + input.limit,
+      };
+    }),
+
+  /**
+   * Delete a specific question from history
+   */
+  deleteQuestion: protectedProcedure
+    .input(z.object({
+      questionId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.question.delete({
+        where: { id: input.questionId },
+      });
+      return { success: true };
+    }),
+
+  /**
+   * Clear all Q&A history for a project
+   */
+  clearQuestionHistory: protectedProcedure
+    .input(z.object({
+      projectId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const result = await ctx.db.question.deleteMany({
+        where: { projectId: input.projectId },
+      });
+      return { deletedCount: result.count };
     }),
 
   /**
