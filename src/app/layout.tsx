@@ -16,6 +16,8 @@ export const metadata: Metadata = {
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
+  display: "swap",
+  preload: true,
 });
 
 export default function RootLayout({
@@ -23,8 +25,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geist.variable}`}>
-        <body>
+      <html lang="en" className={geist.variable} suppressHydrationWarning>
+        <body className={`${geist.className} antialiased`} suppressHydrationWarning>
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <Toaster />
         </body>
