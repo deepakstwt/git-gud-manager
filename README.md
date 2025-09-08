@@ -74,24 +74,7 @@
    cp .env.example .env
    ```
    
-   Configure your `.env` file:
-   ```env
-   # Database
-   DATABASE_URL="postgresql://user:password@localhost:5432/gitgud"
-   
-   # Authentication (Clerk)
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-   CLERK_SECRET_KEY=your_clerk_secret
-   
-   # AI Integration
-   GEMINI_API_KEY=your_gemini_api_key
-   
-   # GitHub Integration
-   GITHUB_TOKEN=your_github_token
-   
-   # App Configuration
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
+   Configure your `.env` file with your actual values.
 
 4. **Set up the database**
    ```bash
