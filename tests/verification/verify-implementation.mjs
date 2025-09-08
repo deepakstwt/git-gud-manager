@@ -4,8 +4,8 @@
  * Verification script - Test the complete commit summarization pipeline
  */
 
-import { getCommitDiff } from './src/lib/github.js';
-import { summarizeCommit } from './src/lib/gemini.js';
+import { getCommitDiff } from '../../src/lib/github.ts';
+import { summarizeCommit } from '../../src/lib/gemini.ts';
 
 async function verifyImplementation() {
   console.log('🔍 Verifying Commit Summarization Pipeline Implementation\n');
@@ -16,7 +16,7 @@ async function verifyImplementation() {
     const testCommit = 'f1338f8c0e5bfbbc3667c2f5b0b3b6bb4bb9f13d'; // Example commit
     
     // Get environment variables
-    const { env } = await import('./src/env.js');
+    const { env } = await import('../../src/env.ts');
     
     console.log('1️⃣ Testing getCommitDiff function...');
     try {

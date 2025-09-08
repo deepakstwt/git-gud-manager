@@ -1,5 +1,4 @@
-import { loadGitHubRepository, loadGitHubRepositoryByExtensions, getRepositoryStats } from './src/lib/github-loader.ts';
-import { config } from 'dotenv';
+const { config } = require('dotenv');
 
 // Load environment variables
 config();
@@ -7,6 +6,10 @@ config();
 async function testGitHubLoader() {
   try {
     console.log('🧪 Testing GitHub Repository Loader...\n');
+
+    // Import the module dynamically since it's TypeScript
+    const { loadGitHubRepository, loadGitHubRepositoryByExtensions, getRepositoryStats } = 
+      await import('../../src/lib/github-loader.ts');
 
     // Test with a public repository
     const testRepo = 'https://github.com/deepakstwt/My_Portfolio_Man';

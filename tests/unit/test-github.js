@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { testCommitFetcher } from './src/lib/github.js';
+import { testCommitFetcher } from '../../src/lib/github.js';
 
 const testUrl = process.argv[2] || 'https://github.com/vercel/next.js';
 const githubToken = process.env.GITHUB_TOKEN;

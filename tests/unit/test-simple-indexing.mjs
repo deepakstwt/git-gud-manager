@@ -10,7 +10,7 @@ async function testIndexing() {
 
   try {
     // Import the indexing function
-    const { indexGithubRepo } = await import('./src/lib/github-rag-indexer.js');
+    const { indexGithubRepo } = await import('../../src/lib/github-rag-indexer.js');
     
     const testProjectId = 'test-project-123';
     const testRepo = 'https://github.com/octocat/Hello-World';  // Simple test repo

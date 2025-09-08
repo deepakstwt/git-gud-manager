@@ -15,7 +15,7 @@ async function testAIInContext() {
     console.log('='.repeat(60));
     
     // Import the AI library with the fixes
-    const { summarizeText } = await import('./src/lib/ai.js');
+    const { summarizeText } = await import('../../src/lib/ai.js');
     
     const testCommitData = `
 feat: add user authentication system

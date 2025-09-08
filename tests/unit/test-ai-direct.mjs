@@ -3,7 +3,7 @@
  * Direct test of AI functionality without authentication
  */
 
-import { summarizeText } from './src/lib/ai.ts';
+import { summarizeText } from '../../src/lib/ai.ts';
 
 async function testAIDirectly() {
   try {
