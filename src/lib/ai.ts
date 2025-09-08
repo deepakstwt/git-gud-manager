@@ -5,13 +5,26 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
  * @returns GoogleGenerativeAI instance
  */
 export async function getGeminiClient(): Promise<GoogleGenerativeAI> {
-  const { env } = await import('@/env');
-  
-  if (!env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY environment variable is not set');
+  try {
+    const { env } = await import('@/env');
+    
+    if (!env.GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY environment variable is not set');
+    }
+    
+    return new GoogleGenerativeAI(env.GEMINI_API_KEY);
+  } catch (envError) {
+    console.error('Error loading environment:', envError);
+    
+    // Fallback to process.env directly
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY environment variable is not set (fallback check)');
+    }
+    
+    console.log('✅ Using fallback environment loading for Gemini API');
+    return new GoogleGenerativeAI(apiKey);
   }
-  
-  return new GoogleGenerativeAI(env.GEMINI_API_KEY);
 }
 
 /**
@@ -21,6 +34,7 @@ export async function getGeminiClient(): Promise<GoogleGenerativeAI> {
  */
 export async function summarizeText(text: string): Promise<string> {
   try {
+    console.log('🤖 Attempting to generate AI summary...');
     const genAI = await getGeminiClient();
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
@@ -36,6 +50,7 @@ Commit data:
 ${text}
 `;
     
+    console.log('🚀 Sending request to Gemini AI...');
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const summary = response.text();
@@ -43,14 +58,19 @@ ${text}
     // Clean up the response and ensure it's not too long
     const cleanSummary = summary.trim();
     if (cleanSummary.length > 500) {
-      return cleanSummary.substring(0, 497) + '...';
+      const truncated = cleanSummary.substring(0, 497) + '...';
+      console.log('✅ AI summary generated and truncated');
+      return truncated;
     }
     
+    console.log('✅ AI summary generated successfully');
     return cleanSummary;
   } catch (error) {
-    console.error('Error generating AI summary:', error);
+    console.error('❌ Error generating AI summary:', error);
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
     
     // Fallback to a basic analysis if AI fails
+    console.log('🔄 Using fallback pattern detection...');
     return generateFallbackSummary(text);
   }
 }
@@ -86,7 +106,7 @@ function generateFallbackSummary(text: string): string {
     summary += "⚡ General improvements and updates.";
   }
   
-  return summary + " (AI analysis unavailable - using pattern detection)";
+  return summary + " (Fallback: AI unavailable - pattern analysis used)";
 }
 
 /**
