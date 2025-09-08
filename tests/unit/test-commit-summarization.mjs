@@ -5,8 +5,8 @@
  * Tests the complete flow: getCommitDiff -> summarizeCommit -> pollCommits
  */
 
-import { getCommitDiff, pollCommits } from './src/lib/github.js';
-import { summarizeCommit, testGeminiConnection } from './src/lib/gemini.js';
+import { getCommitDiff, pollCommits } from '../../src/lib/github.js';
+import { summarizeCommit, testGeminiConnection } from '../../src/lib/gemini.js';
 
 async function testCommitSummarizationPipeline() {
   console.log('🧪 Testing Commit Summarization Pipeline with Gemini + GitHub API\n');
@@ -26,7 +26,7 @@ async function testCommitSummarizationPipeline() {
     const testCommitHash = 'HEAD'; // Use HEAD to get the latest commit
     
     // Get environment variables
-    const { env } = await import('./src/env.js');
+    const { env } = await import('../../src/env.js');
     
     try {
       const diff = await getCommitDiff(testRepo, testCommitHash, env.GITHUB_TOKEN);
@@ -65,7 +65,7 @@ index 1234567..abcdefg 100644
     console.log('(This will use the database and process real commits)\n');
     
     // Get a project from the database to test with
-    const { db } = await import('./src/server/db.js');
+    const { db } = await import('../../src/server/db.js');
     
     const testProject = await db.project.findFirst({
       where: {

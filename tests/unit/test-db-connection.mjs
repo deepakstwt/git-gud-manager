@@ -1,4 +1,4 @@
-import { db } from './src/server/db';
+import { db } from '../../src/server/db';
 
 async function testDatabase() {
   try {

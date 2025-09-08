@@ -1,5 +1,5 @@
-import { createCaller } from './src/server/api/root.js';
-import { createTRPCContext } from './src/server/api/trpc.js';
+import { createCaller } from '../../src/server/api/root.js';
+import { createTRPCContext } from '../../src/server/api/trpc.js';
 
 async function testTRPC() {
   try {

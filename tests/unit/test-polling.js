@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { pollCommits, pollCommitsForProjects } from './src/lib/github.js';
+import { pollCommits, pollCommitsForProjects } from '../../src/lib/github.js';
 
 /**
  * Test the commit polling functionality
@@ -10,7 +10,7 @@ async function testCommitPolling() {
     console.log('='.repeat(60));
     
     // First, let's find a project with a GitHub URL
-    const { db } = await import('./src/server/db.js');
+    const { db } = await import('../../src/server/db.js');
     
     const project = await db.project.findFirst({
       where: {

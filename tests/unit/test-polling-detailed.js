@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { pollCommits, fetchProjectGithubUrl, filterUnprocessedCommits } from './src/lib/github.js';
+import { pollCommits, fetchProjectGithubUrl, filterUnprocessedCommits } from '../../src/lib/github.js';
 
 /**
  * Test polling with a fresh project
@@ -9,7 +9,7 @@ async function testPollCommitsWithNewProject() {
     console.log('🧪 Testing pollCommits with a fresh project...');
     console.log('='.repeat(70));
     
-    const { db } = await import('./src/server/db.js');
+    const { db } = await import('../../src/server/db.js');
     
     // Create a fresh test project
     const testProject = await db.project.create({
@@ -36,8 +36,8 @@ async function testPollCommitsWithNewProject() {
     
     // Test step 2: Get commits and filter
     console.log('\n📋 Step 2: Testing filterUnprocessedCommits...');
-    const { getCommitHashes } = await import('./src/lib/github.js');
-    const { env } = await import('./src/env.js');
+    const { getCommitHashes } = await import('../../src/lib/github.js');
+    const { env } = await import('../../src/env.js');
     
     const allCommits = await getCommitHashes(githubUrl, env.GITHUB_TOKEN);
     const latestCommits = allCommits.slice(0, 5); // Only 5 for testing

@@ -1,7 +1,7 @@
 // Test GitHub Repository Loader
 // This will test the core functionality directly
 
-import { loadGitHubRepository, getRepositoryStats } from './src/lib/github-loader.ts';
+import { loadGitHubRepository, getRepositoryStats } from '../../src/lib/github-loader.ts';
 
 async function testGitHubLoader() {
   console.log('🧪 Testing GitHub Repository Loader...\n');

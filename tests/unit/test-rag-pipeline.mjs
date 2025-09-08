@@ -2,8 +2,8 @@
 // Test script for complete RAG pipeline
 // Usage: node test-rag-pipeline.mjs
 
-import { processRepositoryForRAG, queryRAG, getRAGStats, clearRAGData } from './src/lib/rag-pipeline.ts';
-import { db } from './src/server/db.ts';
+import { processRepositoryForRAG, queryRAG, getRAGStats, clearRAGData } from '../../src/lib/rag-pipeline.ts';
+import { db } from '../../src/server/db.ts';
 
 async function testRAGPipeline() {
   console.log('🧪 Testing Complete RAG Pipeline...\n');

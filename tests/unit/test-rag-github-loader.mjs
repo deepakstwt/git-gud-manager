@@ -2,7 +2,7 @@
 // Test script to verify GitHub repository loader for RAG pipeline
 // Usage: node test-rag-github-loader.mjs
 
-import { loadGitHubRepository } from './src/lib/github-loader.ts';
+import { loadGitHubRepository } from '../../src/lib/github-loader.ts';
 
 async function testRAGGitHubLoader() {
   console.log('🧪 Testing GitHub Repository Loader for RAG Pipeline...\n');

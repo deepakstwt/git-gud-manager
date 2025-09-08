@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Simple test for embeddings functionality
 
-import { summarizeDocument, getEmbeddings } from './src/lib/embeddings.ts';
+import { summarizeDocument, getEmbeddings } from '../../src/lib/embeddings.ts';
 
 async function testEmbeddings() {
   console.log('🧪 Testing Embeddings Functionality...\n');
@@ -40,7 +40,7 @@ export function Button({ children, onClick, variant = 'primary' }) {
     const embedding2 = await getEmbeddings(summary2);
     
     // Import similarity function
-    const { cosineSimilarity } = await import('./src/lib/embeddings.ts');
+    const { cosineSimilarity } = await import('../../src/lib/embeddings.ts');
     const similarity = cosineSimilarity(embedding, embedding2);
     
     console.log(`✅ Similarity between summaries: ${similarity.toFixed(4)}`);

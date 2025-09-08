@@ -1,5 +1,5 @@
-import { createCaller } from './src/server/api/root';
-import { createTRPCContext } from './src/server/api/trpc';
+import { createCaller } from '../../src/server/api/root';
+import { createTRPCContext } from '../../src/server/api/trpc';
 
 async function testProjectsEndpoint() {
   try {

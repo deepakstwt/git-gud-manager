@@ -18,7 +18,15 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'Running tests...' && node tests/unit/test-ai-direct.mjs",
+    "test:ai": "node tests/unit/test-ai-direct.mjs",
+    "test:database": "node tests/unit/test-database.js",
+    "test:all": "npm run test:ai && npm run test:database",
+    "utility:check-summaries": "node tests/utilities/check-ai-summaries.mjs",
+    "utility:view-db": "node tests/utilities/view-database.mjs",
+    "utility:clear-summaries": "node tests/utilities/clear-ai-summaries.mjs",
+    "verify:implementation": "node tests/verification/verify-implementation.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.12",
