@@ -97,10 +97,10 @@ export function AskQuestionCardSimple() {
     }
   };
 
-  const handleQuestionFromHistory = (historyQuestion: HistoryQuestion) => {
+  const handleQuestionFromHistory = (historyQuestion: any) => {
     setQuestion(historyQuestion.text);
     setAnswer(historyQuestion.answer);
-    setFileReferences(historyQuestion.fileReferences);
+    setFileReferences((historyQuestion.fileReferences as unknown as FileReference[]) || []);
     setActiveTab("current");
   };
 
@@ -118,32 +118,6 @@ export function AskQuestionCardSimple() {
       await clearHistoryMutation.mutateAsync({ projectId: project.id });
     } catch (error) {
       console.error('Error clearing history:', error);
-    }
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    setAnswer("");
-    setFileReferences([]);
-    setQuestion("");
-  };
-
-  if (!project) {
-    return null;
-  }
-
-    setIsOpen(true);
-    setAnswer("");
-    setFileReferences([]);
-
-    try {
-      await queryMutation.mutateAsync({
-        projectId: project.id,
-        question: question.trim(),
-        topK: 5,
-      });
-    } catch (error) {
-      console.error('Error asking question:', error);
     }
   };
 
@@ -237,14 +211,17 @@ export function AskQuestionCardSimple() {
                         <ReactMarkdown 
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            code: ({ node, inline, className, children, ...props }) => (
-                              <code
-                                className={`${className} ${inline ? 'bg-muted px-1 py-0.5 rounded text-sm' : 'block bg-muted p-3 rounded-lg text-sm overflow-auto'}`}
-                                {...props}
-                              >
-                                {children}
-                              </code>
-                            ),
+                            code: ({ node, className, children, ...props }: any) => {
+                              const inline = !className?.includes('language-');
+                              return (
+                                <code
+                                  className={`${className} ${inline ? 'bg-muted px-1 py-0.5 rounded text-sm' : 'block bg-muted p-3 rounded-lg text-sm overflow-auto'}`}
+                                  {...props}
+                                >
+                                  {children}
+                                </code>
+                              );
+                            },
                           }}
                         >
                           {answer}
@@ -270,7 +247,7 @@ export function AskQuestionCardSimple() {
               <div className="space-y-4 h-full">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">Question History</h3>
-                  {historyQuery.data?.questions.length > 0 && (
+                  {(historyQuery.data?.questions?.length || 0) > 0 && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -319,7 +296,7 @@ export function AskQuestionCardSimple() {
                               </p>
                               <div className="flex items-center gap-2">
                                 <Badge variant="secondary" className="text-xs">
-                                  {q.fileReferences.length} files
+                                  {(q.fileReferences as unknown as FileReference[] || []).length} files
                                 </Badge>
                               </div>
                             </div>

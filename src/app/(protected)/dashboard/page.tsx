@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import RepositoryLoader from "@/components/repository-loader";
 import { EnhancedRAGComponent } from "@/components/enhanced-rag";
 import { 
-  RefreshCw, 
+  RefreshCcw, 
   ExternalLink, 
   Calendar, 
   Hash, 

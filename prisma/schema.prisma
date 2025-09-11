@@ -27,6 +27,7 @@ model User {
   emailAddress String   @unique
   credits      Int      @default(150)
   UserToProjects UserToProject[]
+  questions    Question[]
 
 }
 
@@ -120,12 +121,15 @@ model Question {
   updatedAt     DateTime @updatedAt
   
   projectId     String
+  userId        String
   text          String   @db.Text  // user question
   answer        String   @db.Text  // AI streamed answer (final snapshot)
   fileReferences Json    // list of referenced files (name, summary, code)
   
   project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+  @@index([userId])
 }
 

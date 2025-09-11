@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, MessageSquare, Send } from "lucide-react";
 import { askQuestion } from "@/lib/actions";
-import { readStreamableValue } from 'ai/rsc';
 import MDEditor from '@uiw/react-md-editor';
 import { CodeReferences } from "./CodeReferences";
 import useProject from "@/hooks/use-project";
+import { toast } from "sonner";
 
 interface FileReference {
   fileName: string;
@@ -19,7 +19,11 @@ interface FileReference {
   similarity: number;
 }
 
-export function AskQuestionCard() {
+interface AskQuestionCardProps {
+  onQuestionSaved?: () => void;
+}
+
+export function AskQuestionCard({ onQuestionSaved }: AskQuestionCardProps = {}) {
   const { project } = useProject();
   const [question, setQuestion] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -37,20 +41,21 @@ export function AskQuestionCard() {
     setFileReferences([]);
 
     try {
-      const result = await askQuestion(project.id, question.trim());
+      const { answer, files } = await askQuestion(project.id, question.trim());
       
       // Set file references immediately
-      setFileReferences(result.files);
+      setFileReferences(files);
       
-      // Stream the answer
-      for await (const delta of readStreamableValue(result.stream)) {
-        if (delta) {
-          setAnswer((prev) => prev + delta);
-        }
-      }
+      // Set the complete answer
+      setAnswer(answer);
+      
+      // Call the callback when question is successfully saved
+      onQuestionSaved?.();
+      toast.success("Question saved successfully!");
     } catch (error) {
       console.error('Error asking question:', error);
       setAnswer('Sorry, I encountered an error while processing your question.');
+      toast.error("Failed to process your question. Please try again.");
     } finally {
       setLoading(false);
     }

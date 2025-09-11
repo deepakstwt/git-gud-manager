@@ -126,6 +126,7 @@ export const ragRouter = createTRPCRouter({
         await ctx.db.question.create({
           data: {
             projectId: input.projectId,
+            userId: ctx.userId,
             text: input.question,
             answer: result.answer,
             fileReferences: result.sources.map(source => ({

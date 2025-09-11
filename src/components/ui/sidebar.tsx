@@ -239,6 +239,7 @@ function Sidebar({
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className
         )}
+        style={{ top: 0 }}
         {...props}
       >
         <div

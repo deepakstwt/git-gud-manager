@@ -3,6 +3,31 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -230,23 +255,27 @@
   }
   
   /* Custom scroll bars */
-  .rag-scrollbar::-webkit-scrollbar {
+  .rag-scrollbar::-webkit-scrollbar,
+  .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   
-  .rag-scrollbar::-webkit-scrollbar-track {
+  .rag-scrollbar::-webkit-scrollbar-track,
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--muted) / 0.3);
     border-radius: 4px;
   }
   
-  .rag-scrollbar::-webkit-scrollbar-thumb {
+  .rag-scrollbar::-webkit-scrollbar-thumb,
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     background: hsl(var(--primary) / 0.4);
     border-radius: 4px;
     transition: background 0.2s ease;
   }
   
-  .rag-scrollbar::-webkit-scrollbar-thumb:hover {
+  .rag-scrollbar::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary) / 0.6);
   }
 }
