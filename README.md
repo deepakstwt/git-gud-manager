@@ -290,7 +290,7 @@ docker run -p 3000:3000 --env-file .env git-gud-manager
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details.
 
 ### **Code of Conduct**
 This project follows the [Contributor Covenant](https://www.contributor-covenant.org/) Code of Conduct.

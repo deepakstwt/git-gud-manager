@@ -1,15 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, MessageSquare, FileText, Search, Zap, Database, Triangle, Brain } from "lucide-react";
+import { 
+  Loader2, 
+  MessageSquare, 
+  FileText, 
+  Search, 
+  Zap, 
+  Database, 
+  Triangle, 
+  Brain,
+  Sparkles,
+  ArrowRight,
+  Quote,
+  Code,
+  BookOpen,
+  Layers,
+  Send,
+  Copy,
+  Check,
+  Star,
+  Lightbulb,
+  Cpu,
+  FileSearch,
+  Network
+} from "lucide-react";
 import { api } from "@/trpc/react";
-import { AskQuestionCardEnhanced } from "./AskQuestionCardEnhanced";
 
 interface EnhancedRAGComponentProps {
   projectId: string;
@@ -20,6 +42,31 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
   const [question, setQuestion] = useState("");
   const [pgvectorResult, setPgvectorResult] = useState<any>(null);
   const [classicResult, setClassicResult] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("query");
+  const [copiedStates, setCopiedStates] = useState<{[key: string]: boolean}>({});
+  const [isTyping, setIsTyping] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'inherit';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [question]);
+
+  // Copy to clipboard functionality
+  const copyToClipboard = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates(prev => ({ ...prev, [id]: true }));
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [id]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
 
   // Get classic RAG stats
   const { data: classicStats, refetch: refetchClassicStats } = api.rag.getStats.useQuery(
@@ -152,336 +199,419 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
     }
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Enhanced Question Card */}
-      <AskQuestionCardEnhanced />
-      
-      {/* RAG System Management */}
-      <Card className="w-full shadow-lg border-2 border-muted/50 bg-gradient-to-br from-background via-background to-muted/10">
-        <CardHeader className="pb-6 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-          <CardTitle className="flex items-center gap-3 text-2xl font-bold">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg">
-              <Brain className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              RAG System Management
-            </span>
-          </CardTitle>
-          <CardDescription className="text-lg text-muted-foreground mt-2">
-            Manage your codebase indexing and RAG configurations for {projectName}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <Tabs defaultValue="pgvector" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-muted/50 p-1">
-              <TabsTrigger value="pgvector" className="flex items-center gap-3 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 flex items-center justify-center">
-                  <Triangle className="w-3 h-3 text-green-600 dark:text-green-400" />
-                </div>
-                <span className="font-medium">PGVector RAG</span>
-                <Badge variant="default" className="ml-1 px-2 py-0.5 text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                  Recommended
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="classic" className="flex items-center gap-3 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
-                  <Database className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                </div>
-                <span className="font-medium">Classic RAG</span>
-                <Badge variant="secondary" className="ml-1 px-2 py-0.5 text-xs">
-                  Legacy
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
+  // Suggested questions for enhanced UX
+  const suggestedQuestions = [
+    "How does authentication work in this codebase?",
+    "What are the main API endpoints?",
+    "How is data validation handled?",
+    "What's the database schema structure?",
+    "How does error handling work?",
+    "What are the security measures implemented?"
+  ];
 
-          {/* PGVector RAG Tab */}
-          <TabsContent value="pgvector" className="space-y-8">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="shadow-lg border-2 border-muted/50 bg-gradient-to-br from-green-50/50 to-green-100/30 dark:from-green-950/20 dark:to-green-900/10">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                      <Triangle className="w-4 h-4 text-white" />
+  return (
+    <div className="relative">
+      {/* Ambient Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent rounded-full blur-3xl floating" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/5 via-secondary/3 to-transparent rounded-full blur-3xl floating-delayed" />
+      </div>
+
+      <div className="relative space-y-8">
+        {/* Hero Section */}
+        <div className="text-center space-y-6 py-12">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card border-0 mb-4">
+            <div className="w-8 h-8 neo-card rounded-xl flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              AI-Powered RAG System
+            </span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold">
+            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Intelligent Code
+            </span>
+            <br />
+            <span className="text-foreground">Discovery</span>
+          </h1>
+          
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Ask questions about your codebase using advanced retrieval-augmented generation. 
+            Get precise answers with highlighted citations and context.
+          </p>
+        </div>
+
+        {/* Main Interface */}
+        <div className="max-w-5xl mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            {/* Premium Tab Navigation */}
+            <div className="flex justify-center mb-12">
+              <TabsList className="glass-card border-0 p-2 h-14 bg-transparent">
+                <TabsTrigger 
+                  value="query" 
+                  className="relative px-8 py-3 rounded-xl transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg"
+                >
+                  <Brain className="w-5 h-5 mr-2" />
+                  Query System
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="manage" 
+                  className="relative px-8 py-3 rounded-xl transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-white data-[state=active]:shadow-lg"
+                >
+                  <Database className="w-5 h-5 mr-2" />
+                  Manage Data
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Query Interface */}
+            <TabsContent value="query" className="space-y-8">
+              {/* Query Input Section */}
+              <div className="glass-card rounded-3xl p-8 border-0">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center group">
+                      <MessageSquare className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    PGVector Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center p-3 bg-background/80 rounded-lg border">
-                      <span className="font-medium">Indexed Files:</span>
-                      <Badge variant="secondary" className="px-3 py-1 text-sm">
-                        {pgvectorStats?.totalFiles || 0}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-background/80 rounded-lg border">
-                      <span className="font-medium">With Embeddings:</span>
-                      <Badge variant={pgvectorStats?.filesWithEmbeddings ? "default" : "secondary"} className="px-3 py-1 text-sm">
-                        {pgvectorStats?.filesWithEmbeddings || 0}
-                      </Badge>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">Ask Your Codebase</h3>
+                      <p className="text-muted-foreground">Natural language queries powered by AI</p>
                     </div>
                   </div>
-                  <Button 
-                    onClick={handleIndexPGVector}
-                    disabled={!project?.githubUrl || indexPGVector.isPending}
-                    className="w-full mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg"
-                    size="lg"
-                  >
-                    {indexPGVector.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Indexing Repository...
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        Index Repository
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
 
-              <Card className="shadow-lg border-2 border-muted/50 bg-gradient-to-br from-blue-50/50 to-blue-100/30 dark:from-blue-950/20 dark:to-blue-900/10">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-white" />
-                    </div>
-                    Recent Files
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {pgvectorStats?.recentFiles?.length ? (
-                    <div className="space-y-2">
-                      {pgvectorStats.recentFiles.slice(0, 4).map((file: any, idx: number) => (
-                        <div key={idx} className="p-3 bg-background/80 rounded-lg border text-sm">
-                          <span className="font-mono text-primary">{file.fileName}</span>
+                  {/* Enhanced Query Input */}
+                  <div className="relative">
+                    <div className="neo-card rounded-2xl p-1 bg-gradient-to-r from-primary/10 to-secondary/10">
+                      <div className="relative bg-background rounded-xl">
+                        <textarea
+                          ref={textareaRef}
+                          value={question}
+                          onChange={(e) => {
+                            setQuestion(e.target.value);
+                            setIsTyping(true);
+                            setTimeout(() => setIsTyping(false), 1000);
+                          }}
+                          placeholder="Ask anything about your codebase... (e.g., How does authentication work?)"
+                          className="w-full px-6 py-4 pr-16 bg-transparent border-0 resize-none focus:outline-none placeholder:text-muted-foreground text-foreground min-h-[60px] max-h-[200px]"
+                          rows={1}
+                        />
+                        
+                        {/* Send Button */}
+                        <div className="absolute right-2 bottom-2 flex gap-2">
+                          {isTyping && (
+                            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
+                              <div className="w-1 h-1 bg-primary rounded-full animate-pulse" />
+                              <span>Typing...</span>
+                            </div>
+                          )}
+                          
+                          <Button
+                            onClick={handleQueryPGVector}
+                            disabled={!question.trim() || queryPGVector.isPending}
+                            className="magnetic-button h-10 px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-0 text-white shadow-lg"
+                          >
+                            {queryPGVector.isPending ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Send className="w-4 h-4" />
+                            )}
+                          </Button>
                         </div>
-                      ))}
-                      {pgvectorStats.recentFiles.length > 4 && (
-                        <div className="text-center">
-                          <Badge variant="outline" className="px-3 py-1">
-                            +{pgvectorStats.recentFiles.length - 4} more files
-                          </Badge>
-                        </div>
-                      )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">No files indexed yet</p>
-                      <p className="text-xs">Click &quot;Index Repository&quot; to get started</p>
+                  </div>
+
+                  {/* Suggested Questions */}
+                  {!pgvectorResult && (
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                        <Lightbulb className="w-4 h-4" />
+                        Suggested Questions
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {suggestedQuestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setQuestion(suggestion)}
+                            className="interactive-card p-4 rounded-xl bg-muted/30 hover:bg-muted/50 text-left text-sm transition-all duration-300 group border border-border/40 hover:border-primary/30"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                                <ArrowRight className="w-3 h-3 text-primary" />
+                              </div>
+                              <span className="group-hover:text-foreground transition-colors duration-300">
+                                {suggestion}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </div>
 
-            {/* Management Actions */}
-            <div className="flex justify-center gap-4 pt-4 border-t border-muted/50">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => void refetchPGVectorStats()}
-                className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-              >
-                <Search className="w-4 h-4" />
-                Refresh Stats
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => clearPGVectorData.mutate({ projectId })}
-                disabled={clearPGVectorData.isPending || !pgvectorStats?.totalFiles}
-                className="flex items-center gap-2"
-              >
-                {clearPGVectorData.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Zap className="w-4 h-4" />
-                )}
-                Clear All Data
-              </Button>
-            </div>
-
-            {/* PGVector Results */}
-            {pgvectorResult && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    AI Answer (Vector-Enhanced)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-sm">{pgvectorResult.answer}</p>
+              {/* Premium Results Display */}
+              {pgvectorResult && (
+                <div className="space-y-6">
+                  {/* AI Answer Section */}
+                  <div className="glass-card rounded-3xl p-8 border-0">
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center">
+                        <Brain className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-bold text-foreground">AI Answer</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => copyToClipboard(pgvectorResult.answer, 'answer')}
+                            className="magnetic-button h-8 px-3"
+                          >
+                            {copiedStates['answer'] ? (
+                              <Check className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-muted-foreground mb-4">Generated using advanced RAG with vector similarity</p>
+                        
+                        <div className="neo-card rounded-2xl p-6 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5">
+                          <div className="prose prose-sm max-w-none">
+                            <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                              {pgvectorResult.answer}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  {pgvectorResult.sources?.length > 0 && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Relevant Files:</h4>
-                      <div className="space-y-2">
-                        {pgvectorResult.sources.map((source: any, idx: number) => (
-                          <div key={idx} className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
-                            <span className="font-mono">{source.fileName}</span>
-                            <Badge variant="outline">
-                              {Math.round(source.similarity * 100)}% match
-                            </Badge>
+
+                  {/* Premium Citations */}
+                  {pgvectorResult.sources && pgvectorResult.sources.length > 0 && (
+                    <div className="glass-card rounded-3xl p-8 border-0">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center">
+                          <Quote className="w-6 h-6 text-secondary" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-foreground">Source Citations</h3>
+                          <p className="text-muted-foreground">
+                            {pgvectorResult.sources.length} relevant documents found
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {pgvectorResult.sources.map((source: any, index: number) => (
+                          <div key={index} className="group">
+                            <div className="interactive-card rounded-2xl p-6 border border-border/40 hover:border-primary/30 transition-all duration-300">
+                              <div className="flex items-start gap-4">
+                                <div className="flex-shrink-0">
+                                  <div className="w-10 h-10 neo-card rounded-xl flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-accent" />
+                                  </div>
+                                </div>
+                                
+                                <div className="flex-1 space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <h4 className="font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                                        {source.fileName}
+                                      </h4>
+                                      <div className="flex items-center gap-2">
+                                        <Star className="w-3 h-3 text-amber-400" />
+                                        <span className="text-xs font-medium text-amber-400">
+                                          {(source.similarity * 100).toFixed(1)}% match
+                                        </span>
+                                      </div>
+                                    </div>
+                                    
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => copyToClipboard(source.sourceCode, `source-${index}`)}
+                                      className="magnetic-button h-8 px-3"
+                                    >
+                                      {copiedStates[`source-${index}`] ? (
+                                        <Check className="w-4 h-4 text-emerald-400" />
+                                      ) : (
+                                        <Copy className="w-4 h-4" />
+                                      )}
+                                    </Button>
+                                  </div>
+
+                                  {source.summary && (
+                                    <div className="p-4 rounded-xl bg-muted/30">
+                                      <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {source.summary}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {source.sourceCode && (
+                                    <div className="relative">
+                                      <div className="absolute top-3 right-3 z-10">
+                                        <Badge variant="secondary" className="text-xs">
+                                          <Code className="w-3 h-3 mr-1" />
+                                          Source Code
+                </Badge>
+                                      </div>
+                                      <pre className="neo-card rounded-xl p-4 bg-muted/50 text-sm overflow-x-auto custom-scrollbar">
+                                        <code className="text-foreground">
+                                          {source.sourceCode.slice(0, 500)}
+                                          {source.sourceCode.length > 500 && '...'}
+                                        </code>
+                                      </pre>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              )}
+            </TabsContent>
 
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => void refetchPGVectorStats()}
-              >
-                Refresh Stats
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => clearPGVectorData.mutate({ projectId })}
-                disabled={clearPGVectorData.isPending}
-              >
-                Clear Index
-              </Button>
-            </div>
-          </TabsContent>
-
-          {/* Classic RAG Tab */}
-          <TabsContent value="classic" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Classic RAG Status</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Documents:</span>
-                    <Badge variant="secondary">
-                      {classicStats?.totalDocuments || 0}
-                    </Badge>
+            {/* Management Interface */}
+            <TabsContent value="manage" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* PGVector System */}
+                <div className="glass-card rounded-3xl p-8 border-0">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center">
+                      <Network className="w-6 h-6 text-emerald-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">Vector Database</h3>
+                      <p className="text-muted-foreground">Advanced similarity search with PGVector</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span>With Embeddings:</span>
-                    <Badge variant={classicStats?.totalEmbeddings ? "default" : "secondary"}>
-                      {classicStats?.totalEmbeddings || 0}
-                    </Badge>
-                  </div>
-                  <Button 
-                    onClick={handleProcessClassic}
-                    disabled={!project?.githubUrl || processClassicRepo.isPending}
-                    className="w-full mt-2"
-                    size="sm"
-                  >
-                    {processClassicRepo.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <FileText className="w-4 h-4 mr-2" />
-                        Process Repository
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Processing Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1 text-xs">
-                    <div>Total Documents: {classicStats?.totalDocuments || 0}</div>
-                    <div>Total Embeddings: {classicStats?.totalEmbeddings || 0}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Classic Query Interface */}
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Ask about your codebase..."
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleQueryClassic()}
-                />
-                <Button 
-                  onClick={handleQueryClassic}
-                  disabled={!question.trim() || queryClassic.isPending || !classicStats?.totalEmbeddings}
-                >
-                  {queryClassic.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Search className="w-4 h-4" />
+                  {pgvectorStats && (
+                    <div className="space-y-4 mb-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="neo-card rounded-xl p-4 bg-muted/30">
+                          <div className="text-2xl font-bold text-emerald-400 mb-1">
+                            {pgvectorStats.totalFiles || 0}
+                          </div>
+                          <div className="text-sm text-muted-foreground">Documents</div>
+                        </div>
+                        <div className="neo-card rounded-xl p-4 bg-muted/30">
+                          <div className="text-2xl font-bold text-emerald-400 mb-1">
+                            {pgvectorStats.filesWithEmbeddings || 0}
+                          </div>
+                          <div className="text-sm text-muted-foreground">With Embeddings</div>
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </Button>
+
+                  <div className="space-y-3">
+                    <Button
+                      onClick={handleIndexPGVector}
+                      disabled={indexPGVector.isPending || !project?.githubUrl}
+                      className="w-full magnetic-button bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 border-0 text-white shadow-lg"
+                    >
+                      {indexPGVector.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <Cpu className="w-4 h-4 mr-2" />
+                      )}
+                      Index Repository
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => clearPGVectorData.mutate({ projectId })}
+                      disabled={clearPGVectorData.isPending}
+                      className="w-full magnetic-button border-destructive/20 text-destructive hover:bg-destructive/10"
+                    >
+                      Clear Vector Data
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Classic System */}
+                <div className="glass-card rounded-3xl p-8 border-0">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center">
+                      <BookOpen className="w-6 h-6 text-blue-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">Classic RAG</h3>
+                      <p className="text-muted-foreground">Traditional document processing</p>
+                    </div>
+                  </div>
+
+                  {classicStats && (
+                    <div className="space-y-4 mb-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="neo-card rounded-xl p-4 bg-muted/30">
+                          <div className="text-2xl font-bold text-blue-400 mb-1">
+                            {classicStats.totalDocuments || 0}
+                          </div>
+                          <div className="text-sm text-muted-foreground">Documents</div>
+                        </div>
+                        <div className="neo-card rounded-xl p-4 bg-muted/30">
+                          <div className="text-2xl font-bold text-blue-400 mb-1">
+                            {classicStats.totalEmbeddings || 0}
+                          </div>
+                          <div className="text-sm text-muted-foreground">Processed</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <Button
+                      onClick={handleProcessClassic}
+                      disabled={processClassicRepo.isPending || !project?.githubUrl}
+                      className="w-full magnetic-button bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0 text-white shadow-lg"
+                    >
+                      {processClassicRepo.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <FileSearch className="w-4 h-4 mr-2" />
+                      )}
+                      Process Repository
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => clearClassicData.mutate({ projectId })}
+                      disabled={clearClassicData.isPending}
+                      className="w-full magnetic-button border-destructive/20 text-destructive hover:bg-destructive/10"
+                    >
+                      Clear Classic Data
+                    </Button>
+                  </div>
+                </div>
               </div>
 
-              {!classicStats?.totalDocuments && (
-                <Alert>
-                  <AlertDescription>
-                    Process your repository first to enable Q&A.
-                  </AlertDescription>
-                </Alert>
+              {/* Repository Status */}
+              {!project?.githubUrl && (
+                <div className="glass-card rounded-3xl p-8 border-0">
+                  <Alert>
+                    <Zap className="w-4 h-4" />
+                    <AlertDescription className="text-lg">
+                      Please add a GitHub repository URL to your project to enable RAG processing.
+                    </AlertDescription>
+                  </Alert>
+                </div>
               )}
-            </div>
-
-            {/* Classic Results */}
-            {classicResult && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    AI Answer (Classic)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-sm">
-                      {classicResult.success ? classicResult.answer : classicResult.error}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => void refetchClassicStats()}
-              >
-                Refresh Stats
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => clearClassicData.mutate({ projectId })}
-                disabled={clearClassicData.isPending}
-              >
-                Clear Data
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

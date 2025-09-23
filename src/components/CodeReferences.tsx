@@ -56,29 +56,29 @@ export function CodeReferences({ fileReferences }: CodeReferencesProps) {
   };
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm">Code References</CardTitle>
-        <CardDescription>
+    <div className="h-full flex flex-col">
+      <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+        <h4 className="text-base font-bold text-gray-900">Code References</h4>
+        <p className="text-sm text-gray-600 mt-2">
           Files relevant to your question with similarity scores
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="h-full pb-6">
+        </p>
+      </div>
+      <div className="flex-1 p-6">
         <Tabs 
           value={selectedTab.toString()} 
           onValueChange={(value) => setSelectedTab(parseInt(value))}
           className="h-full flex flex-col"
         >
-          <TabsList className="grid grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 mb-4">
+          <TabsList className="grid grid-cols-3 mb-6 w-full h-auto bg-gradient-to-r from-white to-gray-50 border border-purple-100 rounded-lg shadow-sm">
             {fileReferences.slice(0, 3).map((file, index) => (
               <TabsTrigger 
                 key={index} 
                 value={index.toString()}
-                className="text-xs px-2"
+                className="text-sm px-4 py-4 flex-1 h-auto data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white font-medium transition-all duration-200 hover:shadow-md rounded-md"
               >
-                <div className="flex flex-col items-center">
-                  <span className="truncate max-w-20">{file.fileName}</span>
-                  <Badge variant="secondary" className="text-xs mt-1">
+                <div className="flex flex-col items-center w-full gap-2">
+                  <span className="truncate max-w-24 text-center text-xs font-medium">{file.fileName}</span>
+                  <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs px-2 py-1">
                     {Math.round(file.similarity * 100)}%
                   </Badge>
                 </div>
@@ -92,42 +92,57 @@ export function CodeReferences({ fileReferences }: CodeReferencesProps) {
               value={index.toString()} 
               className="flex-1 min-h-0"
             >
-              <div className="space-y-4 h-full">
+              <div className="space-y-6 h-full">
                 {/* File Info */}
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-sm">{file.fileName}</h4>
-                  <Badge variant="outline">
-                    {Math.round(file.similarity * 100)}% match
-                  </Badge>
+                <div className="bg-gradient-to-r from-slate-50 to-gray-50 p-4 rounded-lg border border-slate-200 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-base text-gray-900">{file.fileName}</h4>
+                    <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 font-medium">
+                      {Math.round(file.similarity * 100)}% match
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Summary */}
-                <div>
-                  <h5 className="text-xs font-medium text-muted-foreground mb-2">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200 shadow-sm">
+                  <h5 className="text-sm font-bold text-blue-900 mb-3">
                     Summary
                   </h5>
-                  <p className="text-sm bg-muted/50 p-3 rounded-lg">
+                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
                     {file.summary}
-                  </p>
+                  </div>
                 </div>
 
                 {/* Source Code */}
-                <div className="flex-1 min-h-0">
-                  <h5 className="text-xs font-medium text-muted-foreground mb-2">
+                <div className="flex-1 min-h-0 bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-lg border border-gray-200 shadow-sm">
+                  <h5 className="text-sm font-bold text-gray-900 mb-3">
                     Source Code
                   </h5>
-                  <ScrollArea className="h-64 border rounded-lg">
-                    <pre className="text-xs whitespace-pre-wrap font-mono p-4">
-                      {file.sourceCode.slice(0, 2000)} {/* Limit to first 2000 chars */}
-                      {file.sourceCode.length > 2000 && '\n... (truncated)'}
-                    </pre>
+                  <ScrollArea className="h-80 border rounded-lg bg-slate-900 shadow-md" orientation="both">
+                    <SyntaxHighlighter
+                      language={getFileExtension(file.fileName)}
+                      style={vscDarkPlus}
+                      customStyle={{
+                        margin: 0,
+                        padding: '1rem',
+                        fontSize: '0.75rem',
+                        lineHeight: '1.4',
+                        background: 'transparent',
+                        minWidth: '100%'
+                      }}
+                      showLineNumbers
+                      wrapLines={false}
+                    >
+                      {file.sourceCode.slice(0, 3000)} {/* Limit to first 3000 chars */}
+                      {file.sourceCode.length > 3000 ? '\n... (truncated)' : ''}
+                    </SyntaxHighlighter>
                   </ScrollArea>
                 </div>
               </div>
             </TabsContent>
           ))}
         </Tabs>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

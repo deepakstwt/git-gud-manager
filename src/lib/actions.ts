@@ -1,11 +1,12 @@
 'use server';
 
 import { streamText } from 'ai';
-import { createStreamableValue } from 'ai/rsc';
 import { db } from '@/server/db';
 import { getEmbeddings } from '@/lib/embeddings';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { env } from '@/env';
+import { auth } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 
 // Initialize Google AI
 const google = createGoogleGenerativeAI({
@@ -19,8 +20,45 @@ interface FileReference {
   similarity: number;
 }
 
+export interface CreateMeetingInput {
+  name: string;
+  audioUrl: string;
+  projectId: string;
+}
+
+export async function createMeeting({ name, audioUrl, projectId }: CreateMeetingInput) {
+  const session = await auth();
+  if (!session?.userId) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  try {
+    const meeting = await db.meeting.create({
+      data: {
+        name,
+        audioUrl,
+        projectId,
+        userId: session.userId,
+        status: 'PROCESSING',
+      },
+    });
+
+    revalidatePath('/meetings');
+    return { success: true, meeting };
+  } catch (error) {
+    console.error('Error creating meeting:', error);
+    return { success: false, error: 'Failed to create meeting' };
+  }
+}
+
 export async function askQuestion(projectId: string, question: string) {
   console.log(`🔍 Asking question for project ${projectId}: "${question}"`);
+  
+  // Get authenticated user
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error('User not authenticated');
+  }
   
   try {
     // Step 1: Generate embedding for the question
@@ -61,49 +99,73 @@ Question: ${question}
 
 Answer:`;
 
-    // Step 5: Create streamable value
-    const stream = createStreamableValue('');
+    // Step 5: Generate complete response (not streaming for now)
+    const result = await streamText({
+      model: google('models/gemini-1.5-flash'),
+      prompt,
+      temperature: 0.3,
+    });
 
-    // Step 6: Start streaming
-    (async () => {
-      try {
-        const { textStream } = streamText({
-          model: google('models/gemini-1.5-flash'),
-          prompt,
-          temperature: 0.3,
-        });
+    // Get the complete answer
+    const fullAnswer = await result.text;
 
-        let fullAnswer = '';
-        for await (const delta of textStream) {
-          stream.update(delta);
-          fullAnswer += delta;
-        }
-
-        // Step 7: Save to database
-        console.log('💾 Saving question and answer to database...');
-        await db.question.create({
-          data: {
-            projectId,
-            text: question,
-            answer: fullAnswer,
-            fileReferences: similarDocs as any, // Cast to satisfy Prisma Json type
-          },
-        });
-
-        stream.done();
-        console.log('✅ Question processing completed');
-      } catch (error) {
-        console.error('❌ Error during streaming:', error);
-        stream.error(error);
-      }
-    })();
+    // Step 6: Save to database
+    console.log('💾 Saving question and answer to database...');
+    await db.question.create({
+      data: {
+        projectId,
+        userId,
+        text: question,
+        answer: fullAnswer,
+        fileReferences: similarDocs as any, // Cast to satisfy Prisma Json type
+      },
+    });
+    console.log('✅ Question processing completed');
 
     return {
-      stream: stream.value,
+      answer: fullAnswer,
       files: similarDocs,
     };
   } catch (error) {
     console.error('❌ Error in askQuestion:', error);
     throw new Error(`Failed to process question: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+
+
+export async function getMeetings(projectId: string) {
+  try {
+    const session = await auth();
+    if (!session?.userId) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    if (!projectId) {
+      return { success: false, error: 'No project selected' };
+    }
+
+    const meetings = await db.meeting.findMany({
+      where: {
+        projectId,
+        userId: session.userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        name: true,
+        audioUrl: true,
+        transcription: true,
+        summary: true,
+        createdAt: true,
+      },
+    });
+
+    return { success: true, meetings };
+  } catch (error) {
+    console.error('Error fetching meetings:', error);
+    return { success: false, error: 'Failed to fetch meetings. Please try again.' };
   }
 }

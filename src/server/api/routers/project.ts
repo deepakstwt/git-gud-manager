@@ -1,5 +1,6 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { withRetry } from "@/server/db";
 
 export const projectRouter = createTRPCRouter({
   test: publicProcedure
@@ -380,5 +381,53 @@ export const projectRouter = createTRPCRouter({
         console.error("Failed to load repository files:", error);
         throw new Error(`Failed to load repository files: ${error.message}`);
       }
+    }),
+    
+  getQuestions: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      // Get all questions for this project with user information
+      const questions = await ctx.db.question.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+              emailAddress: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      return questions;
     }),
 });
