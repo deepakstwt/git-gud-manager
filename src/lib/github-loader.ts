@@ -11,14 +11,55 @@ export async function loadGitHubRepository(
   githubToken?: string
 ) {
   try {
-    // Create GithubRepoLoader instance
+    // Extract owner and repo from URL with error handling
+    const urlParts = githubUrl.split('/');
+    if (urlParts.length < 2) {
+      throw new Error(`Invalid GitHub URL: ${githubUrl}`);
+    }
+    const [owner, repo] = urlParts.slice(-2);
+
+    // Fetch repository info with caching and optimized headers
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        ...(githubToken ? { Authorization: `token ${githubToken}` } : {}),
+        'Accept': 'application/vnd.github.v3+json',
+        'If-None-Match': '', // Force fresh response
+      },
+      cache: 'no-store', // Don't cache API responses
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.statusText} (${response.status})`);
+    }
+
+    const repoInfo = await response.json();
+    
+    // Create GithubRepoLoader instance with optimized settings
     const loader = new GithubRepoLoader(githubUrl, {
       accessToken: githubToken || undefined,
-      branch: "main",
-      ignoreFiles: ["package-lock.json", "pnpm-lock.yaml", "bun.lockb"],
+      branch: repoInfo.default_branch || "main",
+      ignoreFiles: [
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "bun.lockb",
+        "node_modules/**/*",
+        ".git/**/*",
+        "dist/**/*",
+        "build/**/*", 
+        ".next/**/*",
+        "*.log",
+        "*.lock",
+        "*.map",
+        "**/*.min.js",
+        "**/*.min.css",
+        "**/coverage/**",
+        "**/test/**",
+        "**/__tests__/**"
+      ],
       recursive: true,
       unknown: "warn",
-      maxConcurrency: 5,
+      maxConcurrency: 10, // Increased concurrency for faster loading
     });
 
     // Load all files and their contents

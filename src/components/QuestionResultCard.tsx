@@ -43,7 +43,7 @@ export function QuestionResultCard({
       toast.success("Question saved successfully");
       if (onSaved) onSaved();
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast.error("Failed to save question: " + error.message);
     }
   });
@@ -66,10 +66,10 @@ export function QuestionResultCard({
   };
 
   return (
-    <Card className="w-full shadow-lg border-2 border-muted/50 bg-gradient-to-br from-background via-background to-muted/10 mt-6 mb-8">
-      <CardContent className="p-6">
+    <Card className="w-full shadow-lg border-2 border-muted/50 bg-gradient-to-br from-background via-background/95 to-muted/20 mt-6 mb-8">
+      <CardContent className="p-6 bg-background/95">
         {/* Header with user info and timestamp */}
-        <div className="flex items-center justify-between mb-6 border-b pb-4 border-muted/50">
+        <div className="flex items-center justify-between mb-6 border-b pb-4 border-muted/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
               <User className="w-5 h-5 text-primary" />
@@ -115,34 +115,34 @@ export function QuestionResultCard({
             <Card className="shadow-md border border-muted/50 h-[50vh]">
               <CardContent className="p-6 h-full">
                 <ScrollArea className="h-full pr-4">
-                  <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground">
+                  <div className="prose prose-lg max-w-none dark:prose-invert">
                     <ReactMarkdown 
                       remarkPlugins={[remarkGfm]}
                       components={{
                         code: ({ className, children, ...props }) => (
                           <code
-                            className={`${className} bg-primary/10 text-primary px-2 py-1 rounded-md text-sm font-mono font-medium`}
+                            className={`${className} bg-primary/15 text-primary px-2 py-1 rounded-md text-sm font-mono font-semibold`}
                             {...props}
                           >
                             {children}
                           </code>
                         ),
                         pre: ({ children }) => (
-                          <pre className="bg-muted/50 p-6 rounded-xl text-sm overflow-auto border-2 border-muted font-mono leading-relaxed">
+                          <pre className="bg-muted/80 p-6 rounded-xl text-sm overflow-auto border border-muted font-mono leading-relaxed">
                             {children}
                           </pre>
                         ),
                         h1: ({ children }) => (
-                          <h1 className="text-2xl font-bold mt-8 mb-6 border-b-2 border-primary/20 pb-3 text-foreground">{children}</h1>
+                          <h1 className="text-2xl font-bold mt-8 mb-6 border-b-2 border-primary/20 pb-3 text-foreground/90">{children}</h1>
                         ),
                         h2: ({ children }) => (
-                          <h2 className="text-xl font-semibold mt-6 mb-4 text-foreground">{children}</h2>
+                          <h2 className="text-xl font-semibold mt-6 mb-4 text-foreground/90">{children}</h2>
                         ),
                         h3: ({ children }) => (
-                          <h3 className="text-lg font-medium mt-5 mb-3 text-foreground">{children}</h3>
+                          <h3 className="text-lg font-medium mt-5 mb-3 text-foreground/90">{children}</h3>
                         ),
                         p: ({ children }) => (
-                          <p className="mb-5 leading-relaxed text-foreground text-base">{children}</p>
+                          <p className="mb-5 leading-relaxed text-foreground/90 text-base font-medium">{children}</p>
                         ),
                         ul: ({ children }) => (
                           <ul className="mb-5 ml-6 space-y-2">{children}</ul>

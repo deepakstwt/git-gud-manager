@@ -2,33 +2,30 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
-    previewFeatures = ["postgresqlExtensions"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-    extensions = [pgvector(map: "vector")]
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
 }
 
-
-
-
 model User {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  imageUrl     String?
-  firstName    String?
-  lastName     String?
+  imageUrl  String?
+  firstName String?
+  lastName  String?
 
-  emailAddress String   @unique
-  credits      Int      @default(150)
+  emailAddress   String          @unique
+  credits        Int             @default(150)
   UserToProjects UserToProject[]
-  questions    Question[]
-
+  questions      Question[]
+  meetings       Meeting[]
 }
 
 model Project {
@@ -39,12 +36,52 @@ model Project {
   name      String
   githubUrl String?
 
-  deletedAt DateTime?
-  UserToProjects UserToProject[]
-  commits   Comment[]
-  documents Document[]
+  deletedAt            DateTime?
+  UserToProjects       UserToProject[]
+  commits              Comment[]
+  documents            Document[]
   sourceCodeEmbeddings SourceCodeEmbedding[]
-  questions Question[]
+  questions            Question[]
+  meetings             Meeting[]
+}
+
+model Meeting {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name          String
+  audioUrl      String
+  transcription String?
+  summary       String?
+  status        MeetingStatus  @default(PROCESSING)
+  issues        MeetingIssue[]
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+}
+
+enum MeetingStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model MeetingIssue {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title     String
+  timestamp Int // Timestamp in seconds where the issue was discussed
+  quote     String // Relevant quote from the meeting
+  summary   String? // Optional AI-generated summary of the issue
+
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId String
 }
 
 model UserToProject {
@@ -55,16 +92,16 @@ model UserToProject {
   userId    String
   projectId String
 
-  user      User    @relation(fields: [userId], references: [id])
-  project   Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
 
   @@unique([userId, projectId])
 }
 
 model Comment {
-  id                 String   @id @default(cuid())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   projectId          String
   commitHash         String
@@ -74,7 +111,7 @@ model Comment {
   commitDate         DateTime?
   summary            String?
 
-  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, commitHash])
 }
@@ -84,14 +121,14 @@ model Document {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projectId   String
-  fileName    String
-  filePath    String
-  summary     String   @db.Text
-  content     String   @db.Text
-  embedding   String?  @db.Text  // JSON string of embedding vector
-  
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  fileName  String
+  filePath  String
+  summary   String  @db.Text
+  content   String  @db.Text
+  embedding String? @db.Text // JSON string of embedding vector
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, fileName])
   @@index([projectId])
@@ -105,31 +142,30 @@ model SourceCodeEmbedding {
   projectId String
   fileName  String
   filePath  String
-  summary   String   @db.Text
-  source    String   @db.Text
+  summary   String                      @db.Text
+  source    String                      @db.Text
   embedding Unsupported("vector(768)")? // PGVector column (768 dimensions for Gemini embeddings)
-  
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, fileName])
   @@index([projectId])
 }
 
 model Question {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  projectId     String
-  userId        String
-  text          String   @db.Text  // user question
-  answer        String   @db.Text  // AI streamed answer (final snapshot)
-  fileReferences Json    // list of referenced files (name, summary, code)
-  
-  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId      String
+  userId         String
+  text           String @db.Text // user question
+  answer         String @db.Text // AI streamed answer (final snapshot)
+  fileReferences Json // list of referenced files (name, summary, code)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([userId])
 }
-

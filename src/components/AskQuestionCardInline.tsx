@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, MessageSquare, Send, Search, User, Clock, XIcon, Save, FileText } from "lucide-react";
@@ -64,8 +64,13 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
       setIsDialogOpen(true);
     },
     onError: (error) => {
-      console.error("Query failed:", error);
-      toast.error("Failed to process your question. Please try again.");
+      const errorMsg = typeof error === 'string'
+        ? error
+        : (error && typeof (error as any).message === 'string'
+            ? (error as any).message
+            : 'Unknown error');
+      console.error("Query failed:", errorMsg);
+      toast.error("Failed to process your question. " + errorMsg);
       setAnswer("");
       setFileReferences([]);
       setIsDialogOpen(false);
@@ -79,7 +84,8 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
       handleQuestionSaved();
     },
     onError: (error) => {
-      toast.error("Failed to save question: " + error.message);
+      const errorMsg = typeof error === 'string' ? error : (error && typeof (error as any).message === 'string' ? (error as any).message : 'Unknown error');
+      toast.error("Failed to save question: " + errorMsg);
       setIsSaving(false);
     }
   });
@@ -98,7 +104,13 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
         topK: 5,
       });
     } catch (error) {
-      console.error('Error asking question:', error);
+      const errorMsg =
+        typeof error === 'string'
+          ? error
+          : error && typeof (error as any).message === 'string'
+            ? (error as any).message
+            : 'Unknown error';
+      console.error('Error asking question:', errorMsg);
     }
   };
   
@@ -113,7 +125,8 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
         topK: 5
       });
     } catch (error) {
-      console.error('Error saving question:', error);
+      const errorMsg = typeof error === 'string' ? error : (error && typeof (error as any).message === 'string' ? (error as any).message : 'Unknown error');
+      console.error('Error saving question:', errorMsg);
       setIsSaving(false);
     }
   };
@@ -192,6 +205,7 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
       {/* Question Result Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden" showCloseButton={false}>
+          <DialogTitle className="sr-only">Question Details</DialogTitle>
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 border-b border-gray-200 relative">
             <DialogClose 

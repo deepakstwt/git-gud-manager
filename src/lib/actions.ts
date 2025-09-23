@@ -6,6 +6,7 @@ import { getEmbeddings } from '@/lib/embeddings';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { env } from '@/env';
 import { auth } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 
 // Initialize Google AI
 const google = createGoogleGenerativeAI({
@@ -17,6 +18,37 @@ interface FileReference {
   summary: string;
   sourceCode: string;
   similarity: number;
+}
+
+export interface CreateMeetingInput {
+  name: string;
+  audioUrl: string;
+  projectId: string;
+}
+
+export async function createMeeting({ name, audioUrl, projectId }: CreateMeetingInput) {
+  const session = await auth();
+  if (!session?.userId) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  try {
+    const meeting = await db.meeting.create({
+      data: {
+        name,
+        audioUrl,
+        projectId,
+        userId: session.userId,
+        status: 'PROCESSING',
+      },
+    });
+
+    revalidatePath('/meetings');
+    return { success: true, meeting };
+  } catch (error) {
+    console.error('Error creating meeting:', error);
+    return { success: false, error: 'Failed to create meeting' };
+  }
 }
 
 export async function askQuestion(projectId: string, question: string) {
@@ -97,5 +129,43 @@ Answer:`;
   } catch (error) {
     console.error('❌ Error in askQuestion:', error);
     throw new Error(`Failed to process question: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+
+
+export async function getMeetings(projectId: string) {
+  try {
+    const session = await auth();
+    if (!session?.userId) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    if (!projectId) {
+      return { success: false, error: 'No project selected' };
+    }
+
+    const meetings = await db.meeting.findMany({
+      where: {
+        projectId,
+        userId: session.userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        name: true,
+        audioUrl: true,
+        transcription: true,
+        summary: true,
+        createdAt: true,
+      },
+    });
+
+    return { success: true, meetings };
+  } catch (error) {
+    console.error('Error fetching meetings:', error);
+    return { success: false, error: 'Failed to fetch meetings. Please try again.' };
   }
 }

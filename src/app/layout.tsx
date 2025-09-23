@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -26,9 +27,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={geist.variable} suppressHydrationWarning>
-        <body className={`${geist.className} antialiased`} suppressHydrationWarning>
+        <body className={cn(
+            geist.className,
+            "antialiased min-h-screen bg-black text-[#E0E0E0]"
+          )} suppressHydrationWarning>
           <TRPCReactProvider>{children}</TRPCReactProvider>
-          <Toaster />
+          <Toaster theme="dark" />
         </body>
       </html>
     </ClerkProvider>
