@@ -265,7 +265,7 @@ docker run -p 3000:3000 --env-file .env git-gud-manager
 | `DATABASE_URL` | PostgreSQL connection string | ✅ |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key | ✅ |
 | `CLERK_SECRET_KEY` | Clerk secret key | ✅ |
-| `GEMINI_API_KEY` | Google Gemini API key | ❌ |
+| `GEMINI_API_KEY` | Google Gemini API key | ✅ |
 | `GITHUB_TOKEN` | GitHub personal access token | ✅ |
 | `NEXT_PUBLIC_APP_URL` | Application URL | ✅ |
 
