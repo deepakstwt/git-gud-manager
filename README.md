@@ -1,4 +1,4 @@
-# 🚀 Git Gud Manager Currently( GitAid - AI-Powered Git Management Platform )
+# 🚀 Git Gud Manager   ( Currently : GitAid - AI-Powered Git Management Platform )
 
 <div align="center">
 
