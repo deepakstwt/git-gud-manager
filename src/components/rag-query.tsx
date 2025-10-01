@@ -233,7 +233,7 @@ export function RAGQueryComponent({ projectId, projectName }: RAGQueryComponentP
                   <Badge
                     key={suggestion}
                     variant="outline"
-                    className="cursor-pointer hover:bg-accent"
+                    className="cursor-pointer"
                     onClick={() => setQuestion(suggestion)}
                   >
                     {suggestion}

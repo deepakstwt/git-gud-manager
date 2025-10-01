@@ -129,7 +129,7 @@
   }
 
   a {
-    @apply text-primary hover:text-primary/80 transition-colors duration-[var(--duration-fast)];
+    @apply text-primary transition-colors duration-[var(--duration-fast)];
   }
 
   code {
@@ -404,12 +404,6 @@ a:hover {
     opacity: 0.6;
   }
   
-  .glass-card:hover {
-    background: rgba(var(--glass-bg));
-    border-color: rgba(255, 255, 255, 0.18);
-    box-shadow: var(--shadow-luxury);
-    transform: translateY(-4px) scale(1.005);
-  }
 
   /* Flyhyer-Style Hero Sections */
   .hero-section {
@@ -451,15 +445,6 @@ a:hover {
     pointer-events: none;
   }
   
-  .luxury-card:hover {
-    box-shadow: var(--shadow-elevated);
-    transform: translateY(-2px);
-    border-color: rgba(var(--glass-border));
-  }
-  
-  .luxury-card:hover::after {
-    opacity: 1;
-  }
 
   /* Neumorphism Effects */
   .neo-card {
@@ -495,12 +480,6 @@ a:hover {
     overflow: hidden;
   }
   
-  .neo-button:hover {
-    box-shadow: 
-      12px 12px 24px rgba(var(--neo-shadow-dark)),
-      -12px -12px 24px rgba(var(--neo-shadow-light));
-    transform: translateY(-1px);
-  }
   
   .neo-button:active {
     box-shadow: 
@@ -518,10 +497,6 @@ a:hover {
     backdrop-filter: blur(10px);
     border: 2px solid hsl(var(--border) / 0.5);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .rag-gradient-card:hover {
-    border-color: hsl(var(--primary) / 0.3);
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
   }
   .rag-shimmer {
     background: linear-gradient(110deg, transparent 40%, hsl(var(--primary) / 0.1) 50%, transparent 60%);
@@ -604,16 +579,6 @@ a:hover {
     transition: opacity var(--duration-normal) var(--ease-in-out-cubic);
   }
   
-  .interactive-card:hover::before {
-    opacity: 0.1;
-  }
-  
-  .interactive-card:hover {
-    transform: translateY(-4px) rotateX(5deg) rotateY(5deg);
-    box-shadow: 
-      0 40px 80px -12px rgba(0, 0, 0, 0.6),
-      0 0 60px hsl(var(--glow-primary));
-  }
 
   /* Floating Animation */
   .floating {
@@ -676,25 +641,6 @@ a:hover {
     transition: all var(--duration-normal) var(--ease-spring);
   }
   
-  .magnetic-button:hover {
-    transform: scale(1.05);
-  }
-  
-  .magnetic-button::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: var(--gradient-primary);
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity var(--duration-normal) var(--ease-in-out-cubic);
-  }
-  
-  .magnetic-button:hover::before {
-    opacity: 1;
-    animation: rotate-border 2s linear infinite;
-  }
 
   /* Advanced Scrollbar Styling */
   .custom-scrollbar::-webkit-scrollbar {
@@ -713,9 +659,6 @@ a:hover {
     transition: all var(--duration-fast) ease;
   }
   
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--gradient-secondary);
-  }
 
 /* Advanced Keyframe Animations */
 @keyframes floating {
@@ -760,35 +703,62 @@ a:hover {
     width: 100%;
   }
   
-  /* Sidebar Fixed Positioning for Hover Effect */
+  /* Sidebar Fixed Positioning with proper spacing */
   [data-slot="sidebar-container"] {
     position: fixed !important;
     left: 0;
     top: 0;
     height: 100vh;
-    z-index: 40;
+    z-index: 40; /* Lower z-index to allow proper spacing */
     transition: width 0.3s ease-in-out;
   }
   
-  /* Main Content Area with Fixed Left Margin */
+  /* Main Content Area - With proper spacing from sidebar */
   [data-slot="sidebar-inset"] {
     flex: 1;
     width: 100%;
     min-width: 0;
-    margin-left: 4rem; /* Fixed margin for collapsed sidebar */
+    margin-left: 0; /* No margin for overlapping layout */
+    padding-left: 0; /* No padding for overlapping layout */
     transition: none; /* No transition to prevent jumpy behavior */
     position: relative;
     z-index: 1;
   }
   
-  /* Docker-Style Hover Behavior */
-  [data-slot="sidebar"]:hover {
+  /* Add spacing between sidebar and main content */
+  [data-slot="sidebar-inset"] > * {
+    margin-left: 1.5rem; /* Add 1.5rem spacing from sidebar */
+    padding-left: 0 !important;
+  }
+  
+  /* Ensure the main content glass card has proper spacing */
+  [data-slot="sidebar-inset"] .glass-card {
+    margin-left: 1.5rem !important;
+  }
+  
+  /* Add some padding to the main content area */
+  [data-slot="sidebar-inset"] .glass-card {
+    margin-right: 1rem !important; /* Add right margin for better spacing */
+  }
+  
+  /* Manual Sidebar Behavior - controlled by React state */
+  [data-slot="sidebar-container"] {
+    transition: width 0.3s ease-in-out;
+  }
+  
+  /* Collapsed state */
+  [data-slot="sidebar-container"][data-state="collapsed"] {
+    width: 4rem !important;
+  }
+  
+  /* Expanded state */
+  [data-slot="sidebar-container"][data-state="expanded"] {
     width: 16rem !important;
   }
   
-  [data-slot="sidebar"]:not(:hover) {
-    width: 4rem !important;
-  }
+  /* Content visibility is now handled by React state, no CSS needed */
+  
+  /* Sizing is now handled by React state, no CSS needed */
   
   /* Sidebar Inner Content Responsive */
   .dashboard-content {

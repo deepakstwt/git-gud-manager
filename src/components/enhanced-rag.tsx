@@ -273,7 +273,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 neo-card rounded-2xl flex items-center justify-center group">
-                      <MessageSquare className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+                      <MessageSquare className="w-6 h-6 text-primary transition-transform duration-300" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-foreground">Ask Your Codebase</h3>
@@ -310,7 +310,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                           <Button
                             onClick={handleQueryPGVector}
                             disabled={!question.trim() || queryPGVector.isPending}
-                            className="magnetic-button h-10 px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-0 text-white shadow-lg"
+                            className="magnetic-button h-10 px-4 bg-gradient-to-r from-primary to-secondary border-0 text-white shadow-lg"
                           >
                             {queryPGVector.isPending ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -335,13 +335,13 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                           <button
                             key={index}
                             onClick={() => setQuestion(suggestion)}
-                            className="interactive-card p-4 rounded-xl bg-muted/30 hover:bg-muted/50 text-left text-sm transition-all duration-300 group border border-border/40 hover:border-primary/30"
+                            className="interactive-card p-4 rounded-xl bg-muted/30 text-left text-sm transition-all duration-300 group border border-border/40"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                              <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center transition-colors duration-300">
                                 <ArrowRight className="w-3 h-3 text-primary" />
                               </div>
-                              <span className="group-hover:text-foreground transition-colors duration-300">
+                              <span className="transition-colors duration-300">
                                 {suggestion}
                               </span>
                             </div>
@@ -409,7 +409,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                       <div className="space-y-4">
                         {pgvectorResult.sources.map((source: any, index: number) => (
                           <div key={index} className="group">
-                            <div className="interactive-card rounded-2xl p-6 border border-border/40 hover:border-primary/30 transition-all duration-300">
+                            <div className="interactive-card rounded-2xl p-6 border border-border/40 transition-all duration-300">
                               <div className="flex items-start gap-4">
                                 <div className="flex-shrink-0">
                                   <div className="w-10 h-10 neo-card rounded-xl flex items-center justify-center">
@@ -420,7 +420,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                                 <div className="flex-1 space-y-3">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                      <h4 className="font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                                      <h4 className="font-bold text-foreground transition-colors duration-300">
                                         {source.fileName}
                                       </h4>
                                       <div className="flex items-center gap-2">
@@ -519,7 +519,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                     <Button
                       onClick={handleIndexPGVector}
                       disabled={indexPGVector.isPending || !project?.githubUrl}
-                      className="w-full magnetic-button bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 border-0 text-white shadow-lg"
+                      className="w-full magnetic-button bg-gradient-to-r from-emerald-500 to-emerald-600 border-0 text-white shadow-lg"
                     >
                       {indexPGVector.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -533,7 +533,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                       variant="outline"
                       onClick={() => clearPGVectorData.mutate({ projectId })}
                       disabled={clearPGVectorData.isPending}
-                      className="w-full magnetic-button border-destructive/20 text-destructive hover:bg-destructive/10"
+                      className="w-full magnetic-button border-destructive/20 text-destructive"
                     >
                       Clear Vector Data
                     </Button>
@@ -575,7 +575,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                     <Button
                       onClick={handleProcessClassic}
                       disabled={processClassicRepo.isPending || !project?.githubUrl}
-                      className="w-full magnetic-button bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0 text-white shadow-lg"
+                      className="w-full magnetic-button bg-gradient-to-r from-blue-500 to-blue-600 border-0 text-white shadow-lg"
                     >
                       {processClassicRepo.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -589,7 +589,7 @@ export function EnhancedRAGComponent({ projectId, projectName }: EnhancedRAGComp
                       variant="outline"
                       onClick={() => clearClassicData.mutate({ projectId })}
                       disabled={clearClassicData.isPending}
-                      className="w-full magnetic-button border-destructive/20 text-destructive hover:bg-destructive/10"
+                      className="w-full magnetic-button border-destructive/20 text-destructive"
                     >
                       Clear Classic Data
                     </Button>

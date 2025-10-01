@@ -204,7 +204,7 @@ const QAPage = () => {
                 Try adjusting your search terms or{" "}
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="text-primary underline hover:opacity-80"
+                  className="text-primary underline"
                 >
                   clear the search
                 </button>
@@ -217,7 +217,7 @@ const QAPage = () => {
             {filteredQuestions.map((question, index) => (
               <div
                 key={question.id}
-                className="group flex items-start gap-4 bg-card text-card-foreground rounded-lg p-4 shadow-sm border border-border cursor-pointer hover:shadow-md hover:ring-1 hover:ring-primary/20 transition-all duration-200"
+                className="group flex items-start gap-4 bg-card text-card-foreground rounded-lg p-4 shadow-sm border border-border cursor-pointer transition-all duration-200"
                 onClick={() => handleQuestionClick(index)}
               >
                 {/* User Avatar */}
@@ -243,10 +243,10 @@ const QAPage = () => {
                       {formatDistanceToNow(new Date(question.createdAt), { addSuffix: true })}
                     </span>
                   </div>
-                  <p className="text-foreground text-base font-medium line-clamp-1 mb-1 group-hover:text-primary transition-colors">
+                  <p className="text-foreground text-base font-medium line-clamp-1 mb-1 transition-colors">
                     {question.text}
                   </p>
-                  <p className="text-muted-foreground text-sm line-clamp-2 group-hover:text-foreground transition-colors">
+                  <p className="text-muted-foreground text-sm line-clamp-2 transition-colors">
                     {question.answer}
                   </p>
                 </div>
@@ -283,7 +283,7 @@ const QAPage = () => {
               <div className="bg-gradient-to-r from-[hsl(var(--primary)/0.08)] via-[hsl(var(--secondary)/0.08)] to-[hsl(var(--accent)/0.10)] p-6 border-b border-border relative">
                 <button
                   onClick={handleDialogClose}
-                  className="absolute right-4 top-4 p-2 rounded-full bg-card/90 hover:bg-card text-muted-foreground hover:text-foreground transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="absolute right-4 top-4 p-2 rounded-full bg-card/90 text-muted-foreground transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-primary"
                   aria-label="Close dialog"
                   ref={closeButtonRef}
                 >

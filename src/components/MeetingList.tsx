@@ -93,7 +93,7 @@ export function MeetingList({ projectId }: MeetingListProps) {
                 setRetryCount(0);
                 setError(null);
               }}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-primary"
             >
               Try Again
             </button>

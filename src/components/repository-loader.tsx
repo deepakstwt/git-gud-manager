@@ -55,7 +55,7 @@ export default function RepositoryLoader() {
   }
 
   return (
-    <Card className="bg-background/60 backdrop-blur border-border/40 shadow-lg hover:shadow-xl transition-all duration-200 relative overflow-hidden">
+    <Card className="bg-background/60 backdrop-blur border-border/40 shadow-lg transition-all duration-200 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 pointer-events-none" />
       
       <CardHeader className="relative space-y-1">
@@ -87,25 +87,25 @@ export default function RepositoryLoader() {
         {repositoryData && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all hover:scale-105">
+              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all">
                 <div className="text-2xl font-semibold text-primary/90">
                   {repositoryData.stats.totalFiles}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">Total Files</div>
               </div>
-              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all hover:scale-105">
+              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all">
                 <div className="text-2xl font-semibold text-primary/90">
                   {repositoryData.stats.totalLines.toLocaleString()}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">Total Lines</div>
               </div>
-              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all hover:scale-105">
+              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all">
                 <div className="text-2xl font-semibold text-primary/90">
                   {Math.round(repositoryData.stats.totalCharacters / 1024)}KB
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">Total Size</div>
               </div>
-              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all hover:scale-105">
+              <div className="p-4 rounded-lg bg-background/40 border border-border/40 text-center transition-all">
                 <div className="text-2xl font-semibold text-primary/90">
                   {Object.keys(repositoryData.stats.fileTypes).length}
                 </div>
@@ -130,7 +130,7 @@ export default function RepositoryLoader() {
                 {repositoryData.files.slice(0, 10).map((file: any, index: number) => (
                   <div 
                     key={index} 
-                    className="flex items-center justify-between p-3 bg-background/40 border border-border/40 rounded-lg text-xs hover:bg-muted/40 transition-colors"
+                    className="flex items-center justify-between p-3 bg-background/40 border border-border/40 rounded-lg text-xs transition-colors"
                   >
                     <span className="font-mono truncate text-primary/90">{file.path}</span>
                     <span className="text-muted-foreground ml-4 whitespace-nowrap">

@@ -181,7 +181,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
   // Show a prompt to add GitHub URL only if there's no GitHub URL, no commits in database, and not currently loading
   if (!project?.githubUrl && commits.length === 0 && !loading) {
     return (
-      <Card className="bg-background/60 backdrop-blur border-border/40 shadow-lg hover:shadow-xl transition-all duration-200">
+      <Card className="bg-background/60 backdrop-blur border-border/40 shadow-lg transition-all duration-200">
         <CardHeader className="space-y-1">
           <CardTitle className="flex items-center gap-3 text-lg font-medium">
             <Github className="w-5 h-5 text-primary/80" />
@@ -339,7 +339,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
         ) : (
           <div className="space-y-4 max-h-64 overflow-y-auto">
             {commits.map((commit) => (
-              <div key={commit.sha} className="flex items-start gap-3 p-3 rounded-lg transition-all duration-200 hover:bg-accent/5 border border-border hover:border-border/80 hover:shadow-sm">
+              <div key={commit.sha} className="flex items-start gap-3 p-3 rounded-lg transition-all duration-200 border border-border">
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={commit.author?.avatar_url} />
                   <AvatarFallback className="text-xs bg-orange-100 text-orange-700">
@@ -358,7 +358,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
                   {commit.summary ? (
                     <div className="mt-4 relative">
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
-                      <div className="ml-3 p-4 bg-green-950/20 border-2 border-green-600 shadow-sm rounded-lg text-sm transition-all duration-200 hover:shadow-md hover:border-green-500">
+                      <div className="ml-3 p-4 bg-green-950/20 border-2 border-green-600 shadow-sm rounded-lg text-sm transition-all duration-200">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="flex items-center justify-center w-5 h-5 rounded-full bg-green-900/30">
                             <div className="w-2.5 h-2.5 bg-green-400 rounded-full"></div>
@@ -371,7 +371,7 @@ const CommitLog: React.FC<CommitLogProps> = ({ project }) => {
                   ) : (
                     <div className="mt-4 relative">
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
-                      <div className="ml-3 p-4 bg-blue-950/20 border-2 border-blue-600 shadow-sm rounded-lg text-sm transition-all duration-200 hover:shadow-md hover:border-blue-500">
+                      <div className="ml-3 p-4 bg-blue-950/20 border-2 border-blue-600 shadow-sm rounded-lg text-sm transition-all duration-200">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-900/30">
                             <div className="w-2.5 h-2.5 bg-blue-400 rounded-full"></div>
@@ -575,10 +575,10 @@ const handleQuestionSaved = () => {
                   href={project.githubUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors duration-300 group"
+                    className="inline-flex items-center gap-3 text-muted-foreground transition-colors duration-300 group"
                   >
                     <span className="font-mono text-lg">{project.githubUrl.replace('https://github.com/', '')}</span>
-                    <ExternalLink className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    <ExternalLink className="w-5 h-5 transition-transform duration-300" />
                   </a>
                 </div>
                 
@@ -609,7 +609,7 @@ const handleQuestionSaved = () => {
                   
                   <Button 
                     onClick={inviteTeamMember}
-                    className="magnetic-button bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-0 text-white shadow-lg"
+                    className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white shadow-lg"
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
                     Invite Member
@@ -620,7 +620,7 @@ const handleQuestionSaved = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {teamMembers.map((member) => (
                     <div key={member.id} className="group">
-                      <div className="glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300 hover:scale-105">
+                      <div className="glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300">
                         <div className="relative inline-block mb-3">
                           <Avatar className="w-12 h-12 border-2 border-primary/30 shadow-lg">
                 <AvatarImage src={member.avatar} />
@@ -640,7 +640,7 @@ const handleQuestionSaved = () => {
                   <div className="group">
                     <button 
                       onClick={inviteTeamMember}
-                      className="w-full glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300 hover:scale-105 hover:border-primary/30"
+                      className="w-full glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300"
                     >
                       <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
                         <UserPlus className="w-6 h-6 text-primary" />
@@ -668,7 +668,7 @@ const handleQuestionSaved = () => {
           <Button 
             variant="outline" 
                       onClick={archiveProject}
-                      className="w-full magnetic-button border-destructive/30 text-destructive hover:bg-destructive hover:text-white"
+                      className="w-full magnetic-button border-destructive/30 text-destructive"
                     >
                       Archive Project
           </Button>
@@ -688,7 +688,7 @@ const handleQuestionSaved = () => {
                     </p>
         <Button 
           variant="outline" 
-                      className="w-full magnetic-button border-blue-500/30 text-blue-400 hover:bg-blue-500 hover:text-white"
+                      className="w-full magnetic-button border-blue-500/30 text-blue-400"
                     >
                       Export Data
         </Button>
@@ -771,11 +771,10 @@ const handleQuestionSaved = () => {
                     </div>
                   </div>
 
-                  <div className="border-2 border-dashed border-accent/30 hover:border-accent/50 rounded-3xl p-12 text-center bg-accent/5 transition-all duration-300 hover:bg-accent/10 group">
+                  <div className="border-2 border-dashed border-accent/30 rounded-3xl p-12 text-center bg-accent/5 transition-all duration-300 group">
                     <div className="space-y-6">
                       <div className="relative inline-block">
-                        <Upload className="w-16 h-16 text-accent/70 group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
-                        <div className="absolute inset-0 bg-accent/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-500 blur-xl" />
+                        <Upload className="w-16 h-16 text-accent/70 transition-all duration-300" />
                       </div>
                       
                       <div className="space-y-4">
@@ -794,7 +793,7 @@ const handleQuestionSaved = () => {
                         />
                         
                         <label htmlFor="meeting-upload">
-                          <Button className="magnetic-button bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 border-0 text-white shadow-lg px-8 py-3 text-lg">
+                          <Button className="magnetic-button bg-gradient-to-r from-accent to-accent/80 border-0 text-white shadow-lg px-8 py-3 text-lg">
                             <Upload className="w-5 h-5 mr-3" />
                             Choose Meeting File
                           </Button>
