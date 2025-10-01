@@ -74,7 +74,7 @@ export function CodeReferences({ fileReferences }: CodeReferencesProps) {
               <TabsTrigger 
                 key={index} 
                 value={index.toString()}
-                className="text-sm px-4 py-4 flex-1 h-auto data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white font-medium transition-all duration-200 hover:shadow-md rounded-md"
+                className="text-sm px-4 py-4 flex-1 h-auto data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white font-medium transition-all duration-200 rounded-md"
               >
                 <div className="flex flex-col items-center w-full gap-2">
                   <span className="truncate max-w-24 text-center text-xs font-medium">{file.fileName}</span>

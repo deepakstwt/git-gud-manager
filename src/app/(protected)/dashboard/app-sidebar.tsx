@@ -19,6 +19,8 @@ import {
   Presentation,
   CreditCard,
   Plus,
+  Menu,
+  X,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -53,16 +55,15 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { open, setOpen } = useSidebar();
+  const { open, setOpen, toggleSidebar } = useSidebar();
   const { projects, projectId, setProjectId } = useProject();
   const [isMounted, setIsMounted] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
     // If there's only one project, select it automatically
-    if (projects?.length === 1 && !projectId) {
+    if (projects?.length === 1 && !projectId && projects[0]) {
       setProjectId(projects[0].id);
     }
   }, [projects, projectId, setProjectId]);
@@ -75,31 +76,15 @@ export function AppSidebar() {
     }
   };
 
-  // Docker-style hover behavior
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    setOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setOpen(false);
-  };
-
-  // Show expanded state on hover or when manually opened
-  const isExpanded = open || isHovered;
-
   return (
     <Sidebar 
       collapsible="icon" 
       variant="sidebar" 
       className="!border-0"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className={cn(
         "h-full glass-card !rounded-2xl !border-0 overflow-hidden transition-all duration-300 ease-in-out",
-        isExpanded ? "w-64" : "w-16"
+        open ? "w-64" : "w-16"
       )}>
         {/* Ambient Sidebar Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-card via-card/80 to-card/60" />
@@ -108,42 +93,42 @@ export function AppSidebar() {
         {/* Header */}
         <SidebarHeader className={cn(
           "relative z-10 transition-all duration-300 ease-in-out",
-          isExpanded ? "p-6" : "p-4"
+          open ? "p-6" : "p-4"
         )}>
-          <div className="flex items-center gap-3">
-            <div className="relative flex-shrink-0">
-              <div className={cn(
-                "neo-card !rounded-xl flex items-center justify-center overflow-hidden group transition-all duration-300",
-                isExpanded ? "w-10 h-10" : "w-8 h-8"
-              )}>
-                <div className="absolute inset-0 animated-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className={cn(
-                  "relative z-10 text-white font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent transition-all duration-300",
-                  isExpanded ? "text-lg" : "text-sm"
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-shrink-0">
+                <div className={cn(
+                  "neo-card !rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300",
+                  open ? "w-10 h-10" : "w-8 h-8"
                 )}>
-                  V
-                </span>
+                  <span className={cn(
+                    "relative z-10 text-white font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent transition-all duration-300",
+                    open ? "text-lg" : "text-sm"
+                  )}>
+                    V
+                  </span>
+                </div>
+                {/* Floating particles around logo - only show when expanded */}
+                {open && (
+                  <>
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary/40 rounded-full floating" />
+                    <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-secondary/40 rounded-full floating-delayed" />
+                  </>
+                )}
               </div>
-              {/* Floating particles around logo - only show when expanded */}
-              {isExpanded && (
-                <>
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary/40 rounded-full floating" />
-                  <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-secondary/40 rounded-full floating-delayed" />
-                </>
+              
+              {/* Text only shows when expanded */}
+              {open && (
+                <div className="space-y-1 transition-all duration-300">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent whitespace-nowrap">
+                    VrindaHelp
+                  </h2>
+                  <p className="text-xs text-muted-foreground font-medium whitespace-nowrap">
+                    Next-Gen Dashboard
+                  </p>
+                </div>
               )}
-            </div>
-            
-            {/* Text only shows when expanded */}
-            <div className={cn(
-              "space-y-1 transition-all duration-300 overflow-hidden",
-              isExpanded ? "opacity-100 translate-x-0 w-auto" : "opacity-0 -translate-x-4 w-0"
-            )}>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent whitespace-nowrap">
-                VrindaHelp
-              </h2>
-              <p className="text-xs text-muted-foreground font-medium whitespace-nowrap">
-                Next-Gen Dashboard
-              </p>
             </div>
           </div>
         </SidebarHeader>
@@ -152,7 +137,7 @@ export function AppSidebar() {
         <SidebarContent className="relative z-10">
           <SidebarGroup>
             {/* Group label only shows when expanded */}
-            {isExpanded && (
+            {open && (
               <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold px-6 mb-2 transition-all duration-300">
                 Application
               </SidebarGroupLabel>
@@ -160,7 +145,7 @@ export function AppSidebar() {
 
             <SidebarGroupContent className={cn(
               "transition-all duration-300",
-              isExpanded ? "px-3" : "px-2"
+              open ? "px-3" : "px-2"
             )}>
               <SidebarMenu className="space-y-2">
                 {items.map(item => {
@@ -171,16 +156,15 @@ export function AppSidebar() {
                         <Link 
                           href={item.url} 
                           className={cn(
-                            "relative group rounded-xl transition-all duration-300 overflow-hidden flex items-center justify-start",
-                            "hover:scale-[1.02] hover:shadow-lg",
-                            isExpanded ? "px-3 py-2" : "px-2 py-2 justify-center",
+                            "relative group rounded-xl transition-all duration-300 overflow-hidden flex items-center",
+                            open ? "px-3 py-2 justify-start" : "px-2 py-2 justify-center",
                             isActive 
                               ? "neo-card !bg-gradient-to-r !from-primary !to-secondary text-white shadow-lg" 
-                              : "hover:bg-muted/50"
+                              : ""
                           )}
                         >
                           {/* Active indicator */}
-                          {isActive && isExpanded && (
+                          {isActive && open && (
                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent via-primary to-secondary rounded-r-full" />
                           )}
                           
@@ -189,8 +173,8 @@ export function AppSidebar() {
                             "relative transition-all duration-300 flex-shrink-0",
                             isActive 
                               ? "text-white transform scale-110" 
-                              : "text-muted-foreground group-hover:text-primary group-hover:scale-105",
-                            isExpanded ? "" : "mx-auto"
+                              : "text-muted-foreground",
+                            open ? "" : "mx-auto"
                           )}>
                             <item.icon className="w-5 h-5" />
                             {isActive && (
@@ -199,21 +183,17 @@ export function AppSidebar() {
                           </div>
                           
                           {/* Text only shows when expanded */}
-                          {isExpanded && (
+                          {open && (
                             <span className={cn(
                               "font-medium transition-all duration-300 ml-3 whitespace-nowrap",
                               isActive 
                                 ? "text-white font-semibold" 
-                                : "group-hover:text-foreground"
+                                : ""
                             )}>
                               {item.title}
                             </span>
                           )}
                           
-                          {/* Hover effect overlay */}
-                          {!isActive && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -226,7 +206,7 @@ export function AppSidebar() {
           {/* Projects Section */}
           <SidebarGroup className="mt-6">
             {/* Group label only shows when expanded */}
-            {isExpanded && (
+            {open && (
               <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold px-6 mb-2 transition-all duration-300">
                 Your Projects
               </SidebarGroupLabel>
@@ -234,44 +214,47 @@ export function AppSidebar() {
             
             <SidebarGroupContent className={cn(
               "transition-all duration-300",
-              isExpanded ? "px-3" : "px-2"
+              open ? "px-3" : "px-2"
             )}>
               <SidebarMenu className="space-y-2">
                 {projects === undefined ? (
                   // Enhanced Loading state
                   <div className={cn(
-                    "flex flex-col items-center py-6 space-y-3",
-                    !isExpanded && "py-3"
+                    "flex flex-col items-center space-y-3",
+                    open ? "py-6" : "py-3"
                   )}>
                     <div className="relative">
                       <div className="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
                     </div>
-                    {isExpanded && (
+                    {open && (
                       <div className="shimmer-loading h-3 w-24 rounded bg-muted/30" />
                     )}
                   </div>
                 ) : projects.length === 0 ? (
                   // Enhanced Empty state
                   <div className={cn(
-                    "flex flex-col items-center py-6 text-center space-y-4",
-                    !isExpanded && "py-3"
+                    "flex flex-col items-center text-center space-y-4",
+                    open ? "py-6" : "py-3"
                   )}>
                     <div className="relative">
                       <div className={cn(
-                        "neo-card rounded-2xl flex items-center justify-center",
-                        isExpanded ? "w-12 h-12" : "w-8 h-8"
+                        "neo-card rounded-2xl flex items-center justify-center transition-all duration-300",
+                        open ? "w-12 h-12" : "w-8 h-8"
                       )}>
-                        <Plus className={cn("text-primary", isExpanded ? "w-6 h-6" : "w-4 h-4")} />
+                        <Plus className={cn(
+                          "text-primary transition-all duration-300",
+                          open ? "w-6 h-6" : "w-4 h-4"
+                        )} />
                       </div>
-                      {isExpanded && (
+                      {open && (
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent/40 rounded-full floating" />
                       )}
                     </div>
-                    {isExpanded && (
+                    {open && (
                       <div className="space-y-2">
                         <p className="text-xs text-muted-foreground font-medium">No projects yet</p>
                         <Link href="/create">
-                          <Button className="magnetic-button text-xs h-8 px-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 border-0">
+                          <Button className="magnetic-button text-xs h-8 px-3 bg-gradient-to-r from-primary to-secondary border-0">
                             <Plus className="w-3 h-3 mr-1"/>
                             Create your first project
                           </Button>
@@ -287,17 +270,16 @@ export function AppSidebar() {
                       <SidebarMenuItem key={project.id}>
                         <SidebarMenuButton 
                           className={cn(
-                            "relative group rounded-xl transition-all duration-300 overflow-hidden cursor-pointer flex items-center justify-start",
-                            "hover:scale-[1.02] hover:shadow-lg",
-                            isExpanded ? "px-3 py-2" : "px-2 py-2 justify-center",
+                            "relative group rounded-xl transition-all duration-300 overflow-hidden cursor-pointer flex items-center",
+                            open ? "px-3 py-2 justify-start" : "px-2 py-2 justify-center",
                             isSelected 
                               ? "neo-card !bg-gradient-to-r !from-accent !to-primary text-white shadow-lg" 
-                              : "hover:bg-muted/50"
+                              : ""
                           )}
                           onClick={() => setProjectId(project.id)}
                         >
                           {/* Selected indicator */}
-                          {isSelected && isExpanded && (
+                          {isSelected && open && (
                             <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-secondary via-accent to-primary rounded-l-full" />
                           )}
                           
@@ -306,15 +288,15 @@ export function AppSidebar() {
                             "relative transition-all duration-300 flex-shrink-0",
                             isSelected 
                               ? "transform scale-110" 
-                              : "group-hover:scale-105",
-                            isExpanded ? "" : "mx-auto"
+                              : "",
+                            open ? "" : "mx-auto"
                           )}>
                             <div className={cn(
                               "rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300",
-                              isExpanded ? "w-8 h-8" : "w-6 h-6",
+                              open ? "w-8 h-8" : "w-6 h-6",
                               isSelected
                                 ? "bg-white/20 text-white shadow-lg"
-                                : "bg-gradient-to-br from-primary to-secondary text-white group-hover:shadow-md"
+                                : "bg-gradient-to-br from-primary to-secondary text-white"
                             )}>
                               {project.name.charAt(0).toUpperCase()}
                             </div>
@@ -324,26 +306,22 @@ export function AppSidebar() {
                           </div>
                           
                           {/* Project Name - only shows when expanded */}
-                          {isExpanded && (
+                          {open && (
                             <span className={cn(
                               "text-sm font-medium transition-all duration-300 flex-1 truncate ml-3 whitespace-nowrap",
                               isSelected 
                                 ? "text-white font-semibold" 
-                                : "group-hover:text-foreground"
+                                : ""
                             )}>
                               {project.name}
                             </span>
                           )}
                           
                           {/* Active project pulse - only shows when expanded */}
-                          {isSelected && isExpanded && (
+                          {isSelected && open && (
                             <div className="w-2 h-2 bg-emerald-400 rounded-full pulse-glow-secondary" />
                           )}
                           
-                          {/* Hover effect overlay */}
-                          {!isSelected && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                          )}
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     )
@@ -351,12 +329,12 @@ export function AppSidebar() {
                 )}
                 
                 {/* Create Project Button - only shows when expanded */}
-                {isExpanded && projects && projects.length > 0 && (
+                {open && (
                   <>
                     <div className="h-4" />
                     <SidebarMenuItem>
                       <Link href="/create" className="block">
-                        <Button className="w-full magnetic-button justify-start text-sm h-10 bg-gradient-to-r from-muted to-muted/80 hover:from-primary/20 hover:to-secondary/20 border border-border/40 hover:border-primary/20 text-muted-foreground hover:text-foreground transition-all duration-300">
+                        <Button className="w-full magnetic-button justify-start text-sm h-10 bg-gradient-to-r from-muted to-muted/80 border border-border/40 text-muted-foreground transition-all duration-300">
                           <Plus className="w-4 h-4 mr-2"/>
                           Create Project
                         </Button>
@@ -367,6 +345,7 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+
         </SidebarContent>
       </div>
     </Sidebar>

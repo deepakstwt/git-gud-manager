@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { UserButton } from "@clerk/nextjs";
 import React from "react";
 import { AppSidebar } from "./dashboard/app-sidebar";
+import { HeaderWithToggle } from "@/components/header-with-toggle";
 
 type Props = {
   children: React.ReactNode;
@@ -29,39 +29,8 @@ const SidebarLayout = ({ children }: Props) => {
       <AppSidebar />
       
       <SidebarInset>
-        {/* Top Navigation Header */}
-        <header className="sticky top-0 z-50 w-full">
-          <div className="m-4 mb-0">
-            <div className="glass-card rounded-2xl px-6 py-4 border-0">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                    Git Gud Manager
-                  </h1>
-                </div>
-                
-                <div className="flex-1" />
-                
-                <div className="flex items-center gap-4">
-                  {/* Status Indicator */}
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full pulse-glow-secondary" />
-                    <span className="text-xs font-medium text-emerald-400">Live</span>
-                  </div>
-                  
-                  <UserButton 
-                    afterSignOutUrl="/"
-                    appearance={{
-                      elements: {
-                        avatarBox: "size-10 rounded-xl border-2 border-primary/20 shadow-lg hover:border-primary/40 transition-all duration-200",
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Top Navigation Header with Toggle */}
+        <HeaderWithToggle />
 
         {/* Main Content Area */}
         <div className="p-4 pt-4 w-full">

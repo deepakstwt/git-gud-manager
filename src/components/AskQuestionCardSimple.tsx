@@ -277,7 +277,7 @@ export function AskQuestionCardSimple() {
 
                   <div className="space-y-3">
                     {historyQuery.data?.questions.map((q) => (
-                      <Card key={q.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Card key={q.id} className="cursor-pointer transition-colors">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-4">
                             <div 

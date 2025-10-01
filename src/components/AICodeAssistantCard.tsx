@@ -41,7 +41,7 @@ export function AICodeAssistantCard() {
             <Button 
               type="submit" 
               size="icon"
-              className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-105"
+              className="bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all duration-200"
             >
               <Send className="h-4 w-4" />
             </Button>

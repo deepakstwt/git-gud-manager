@@ -8,9 +8,10 @@ import { Plus, Loader2 } from 'lucide-react';
 import useProject from '@/hooks/use-project';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export function MeetingsPageClient() {
+export function MeetingsPageClient({ projectId: propProjectId }: { projectId?: string } = {}) {
   const [showUpload, setShowUpload] = useState(false);
-  const { project, projectId } = useProject();
+  const { project, projectId: hookProjectId } = useProject();
+  const projectId = propProjectId || hookProjectId;
 
   if (!projectId) {
     return (

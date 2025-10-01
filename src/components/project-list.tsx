@@ -59,7 +59,7 @@ export function ProjectList() {
       <Card>
         <CardHeader>
           <CardTitle>No Projects</CardTitle>
-          <CardDescription>You haven't created any projects yet.</CardDescription>
+          <CardDescription>You haven&apos;t created any projects yet.</CardDescription>
         </CardHeader>
       </Card>
     )

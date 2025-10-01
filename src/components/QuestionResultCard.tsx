@@ -85,7 +85,7 @@ export function QuestionResultCard({
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 hover:bg-primary/10 border-primary/20"
+            className="flex items-center gap-2 border-primary/20"
             onClick={handleSaveQuestion}
             disabled={isSaving}
           >

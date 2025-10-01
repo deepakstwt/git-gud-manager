@@ -209,7 +209,7 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-6 border-b border-gray-200 relative">
             <DialogClose 
-              className="absolute right-4 top-4 p-2 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-gray-900 transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="absolute right-4 top-4 p-2 rounded-full bg-white/90 text-gray-500 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={handleCloseDialog}
             >
               <XIcon className="h-5 w-5" />
@@ -233,7 +233,7 @@ export function AskQuestionCardInline({ onQuestionSaved }: AskQuestionCardInline
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 hover:bg-primary/10 border-primary/20"
+                className="flex items-center gap-2 border-primary/20"
                 onClick={handleSaveQuestion}
                 disabled={isSaving}
               >

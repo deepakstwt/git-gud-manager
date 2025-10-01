@@ -138,7 +138,7 @@ export function AskQuestionCardEnhanced() {
 
   return (
     <>
-      <Card className="w-full shadow-lg border-2 hover:border-primary/20 transition-all duration-300 bg-gradient-to-br from-background via-background to-muted/20">
+      <Card className="w-full shadow-lg border-2 transition-all duration-300 bg-gradient-to-br from-background via-background to-muted/20">
         <CardHeader className="pb-6 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
           <CardTitle className="flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -168,7 +168,7 @@ export function AskQuestionCardEnhanced() {
                   type="submit" 
                   disabled={!question.trim() || queryMutation.isPending}
                   size="lg"
-                  className="px-8 h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="px-8 h-14 bg-gradient-to-r from-primary to-primary/80 transition-all duration-200 shadow-lg"
                 >
                   {queryMutation.isPending ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -372,7 +372,7 @@ export function AskQuestionCardEnhanced() {
                       size="sm"
                       onClick={handleClearHistory}
                       disabled={clearHistoryMutation.isPending}
-                      className="flex items-center gap-2 hover:bg-destructive hover:text-destructive-foreground border-2 hover:border-destructive transition-all duration-200"
+                      className="flex items-center gap-2 border-2 transition-all duration-200"
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear All
@@ -409,7 +409,7 @@ export function AskQuestionCardEnhanced() {
 
                       <div className="space-y-4">
                         {historyQuery.data?.questions.map((q) => (
-                          <Card key={q.id} className="cursor-pointer hover:bg-gradient-to-r hover:from-muted/30 hover:to-muted/10 transition-all duration-300 hover:shadow-lg border-2 hover:border-primary/20 group">
+                          <Card key={q.id} className="cursor-pointer transition-all duration-300 border-2 group">
                             <CardContent className="p-6">
                               <div className="flex items-start justify-between gap-4">
                                 <div 
@@ -439,7 +439,7 @@ export function AskQuestionCardEnhanced() {
                                       <FileText className="w-3 h-3 mr-1" />
                                       {Array.isArray(q.fileReferences) ? q.fileReferences.length : 0} files
                                     </Badge>
-                                    <Badge variant="outline" className="text-xs px-3 py-1 border-primary/30 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
+                                    <Badge variant="outline" className="text-xs px-3 py-1 border-primary/30 text-primary transition-all duration-200">
                                       Click to view
                                     </Badge>
                                   </div>
@@ -452,7 +452,7 @@ export function AskQuestionCardEnhanced() {
                                     handleDeleteQuestion(q.id);
                                   }}
                                   disabled={deleteQuestionMutation.isPending}
-                                  className="opacity-40 group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 w-8 h-8 p-0"
+                                  className="opacity-40 transition-all duration-200 w-8 h-8 p-0"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
