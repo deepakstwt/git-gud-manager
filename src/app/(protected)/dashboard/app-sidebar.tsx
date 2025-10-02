@@ -21,6 +21,7 @@ import {
   Plus,
   Menu,
   X,
+  Brain,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -35,6 +36,11 @@ const items = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Commit Intelligence",
+    url: "/commit-intelligence",
+    icon: Brain,
   },
   {
     title: "Q&A",
@@ -80,40 +86,45 @@ export function AppSidebar() {
     <Sidebar 
       collapsible="icon" 
       variant="sidebar" 
-      className="!border-0"
+      className="!border-0 mt-24 ml-4"
     >
       <div className={cn(
-        "h-full glass-card !rounded-2xl !border-0 overflow-hidden transition-all duration-300 ease-in-out",
+        "h-[calc(100vh-6rem)] glass-card !rounded-2xl !border-0 overflow-hidden transition-all duration-300 ease-in-out",
         open ? "w-64" : "w-16"
       )}>
-        {/* Ambient Sidebar Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-card via-card/80 to-card/60" />
-        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
+        {/* Enhanced Ambient Sidebar Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-800/90 via-slate-700/80 to-slate-600/70" />
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-blue-500/10 via-purple-500/8 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-pink-500/8 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5" />
         
-        {/* Header */}
-        <SidebarHeader className={cn(
-          "relative z-10 transition-all duration-300 ease-in-out",
-          open ? "p-6" : "p-4"
-        )}>
+        {/* Content Wrapper with Top Padding */}
+        <div className="relative z-10 pt-8">
+              {/* Header */}
+              <SidebarHeader className={cn(
+                "transition-all duration-300 ease-in-out",
+                open ? "p-6 pt-0" : "p-4 pt-0"
+              )}>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="relative flex-shrink-0">
-                <div className={cn(
-                  "neo-card !rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300",
-                  open ? "w-10 h-10" : "w-8 h-8"
-                )}>
-                  <span className={cn(
-                    "relative z-10 text-white font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent transition-all duration-300",
-                    open ? "text-lg" : "text-sm"
-                  )}>
-                    V
-                  </span>
-                </div>
-                {/* Floating particles around logo - only show when expanded */}
+                     <div className="relative flex-shrink-0">
+                       <div className={cn(
+                         "neo-card !rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 shadow-lg shadow-blue-500/25",
+                         open ? "w-10 h-10" : "w-8 h-8"
+                       )}>
+                         <span className={cn(
+                           "relative z-10 text-white font-bold transition-all duration-300 drop-shadow-lg",
+                           open ? "text-xl" : "text-sm"
+                         )}>
+                           G
+                         </span>
+                       </div>
+                {/* Enhanced floating particles around logo - only show when expanded */}
                 {open && (
                   <>
-                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary/40 rounded-full floating" />
-                    <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-secondary/40 rounded-full floating-delayed" />
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full floating shadow-lg shadow-blue-400/50" />
+                    <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full floating-delayed shadow-lg shadow-pink-400/50" />
+                    <div className="absolute top-1 -right-2 w-1 h-1 bg-gradient-to-br from-green-400 to-emerald-400 rounded-full floating-slow shadow-lg shadow-green-400/50" />
                   </>
                 )}
               </div>
@@ -121,12 +132,9 @@ export function AppSidebar() {
               {/* Text only shows when expanded */}
               {open && (
                 <div className="space-y-1 transition-all duration-300">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent whitespace-nowrap">
-                    VrindaHelp
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap drop-shadow-sm">
+                    GitAid
                   </h2>
-                  <p className="text-xs text-muted-foreground font-medium whitespace-nowrap">
-                    Next-Gen Dashboard
-                  </p>
                 </div>
               )}
             </div>
@@ -138,7 +146,7 @@ export function AppSidebar() {
           <SidebarGroup>
             {/* Group label only shows when expanded */}
             {open && (
-              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold px-6 mb-2 transition-all duration-300">
+              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-blue-300/80 font-semibold px-6 mb-2 transition-all duration-300 bg-gradient-to-r from-blue-500/10 to-purple-500/10 py-2 rounded-lg border border-blue-400/20">
                 Application
               </SidebarGroupLabel>
             )}
@@ -159,26 +167,29 @@ export function AppSidebar() {
                             "relative group rounded-xl transition-all duration-300 overflow-hidden flex items-center",
                             open ? "px-3 py-2 justify-start" : "px-2 py-2 justify-center",
                             isActive 
-                              ? "neo-card !bg-gradient-to-r !from-primary !to-secondary text-white shadow-lg" 
-                              : ""
+                              ? "neo-card !bg-gradient-to-r !from-blue-500 !to-purple-500 text-white shadow-lg shadow-blue-500/25" 
+                              : "hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:border-blue-400/30"
                           )}
                         >
-                          {/* Active indicator */}
+                          {/* Enhanced Active indicator */}
                           {isActive && open && (
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent via-primary to-secondary rounded-r-full" />
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-purple-400 to-pink-400 rounded-r-full shadow-lg shadow-blue-400/50" />
                           )}
                           
-                          {/* Icon with enhanced styling */}
+                          {/* Enhanced Icon with better colors */}
                           <div className={cn(
                             "relative transition-all duration-300 flex-shrink-0",
                             isActive 
                               ? "text-white transform scale-110" 
-                              : "text-muted-foreground",
+                              : "text-slate-300 hover:text-white",
                             open ? "" : "mx-auto"
                           )}>
-                            <item.icon className="w-5 h-5" />
+                            <item.icon className={cn(
+                              "w-5 h-5 transition-all duration-300",
+                              isActive ? "drop-shadow-lg" : "hover:drop-shadow-md"
+                            )} />
                             {isActive && (
-                              <div className="absolute inset-0 bg-white/20 rounded blur-sm scale-150" />
+                              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded blur-sm scale-150" />
                             )}
                           </div>
                           
@@ -187,8 +198,8 @@ export function AppSidebar() {
                             <span className={cn(
                               "font-medium transition-all duration-300 ml-3 whitespace-nowrap",
                               isActive 
-                                ? "text-white font-semibold" 
-                                : ""
+                                ? "text-white font-semibold drop-shadow-lg" 
+                                : "text-slate-300 group-hover:text-white"
                             )}>
                               {item.title}
                             </span>
@@ -207,7 +218,7 @@ export function AppSidebar() {
           <SidebarGroup className="mt-6">
             {/* Group label only shows when expanded */}
             {open && (
-              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/80 font-semibold px-6 mb-2 transition-all duration-300">
+              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-purple-300/80 font-semibold px-6 mb-2 transition-all duration-300 bg-gradient-to-r from-purple-500/10 to-pink-500/10 py-2 rounded-lg border border-purple-400/20">
                 Your Projects
               </SidebarGroupLabel>
             )}
@@ -347,6 +358,7 @@ export function AppSidebar() {
           </SidebarGroup>
 
         </SidebarContent>
+        </div>
       </div>
     </Sidebar>
   );

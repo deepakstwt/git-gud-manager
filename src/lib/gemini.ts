@@ -22,7 +22,7 @@ export async function getGeminiClient(): Promise<GoogleGenerativeAI> {
 export async function summarizeCommit(diff: string): Promise<string> {
   try {
     const genAI = await getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const systemPrompt = `
 You are an expert software engineer analyzing Git commit diffs. Your task is to provide concise, insightful summaries of code changes.

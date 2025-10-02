@@ -1,9 +1,20 @@
 'use client';
 
-import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
+import dynamic from "next/dynamic";
+
+// Dynamically import UserButton to prevent hydration issues
+const UserButton = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.UserButton })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-10 h-10 rounded-xl border-2 border-primary/20 bg-muted animate-pulse" />
+    ),
+  }
+);
 
 export function HeaderWithToggle() {
   const { open, toggleSidebar } = useSidebar();
@@ -28,9 +39,14 @@ export function HeaderWithToggle() {
                 )}
               </Button>
               
-              <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Git Gud Manager
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent gradient-shift drop-shadow-sm">
+                  GitAid
+                </h1>
+                <p className="text-sm font-semibold bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent drop-shadow-md">
+                  AI-Powered Git Management
+                </p>
+              </div>
             </div>
             
             <div className="flex-1" />
