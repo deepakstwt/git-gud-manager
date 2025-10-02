@@ -36,7 +36,7 @@ export async function summarizeText(text: string): Promise<string> {
   try {
     console.log('🤖 Attempting to generate AI summary...');
     const genAI = await getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const prompt = `
 Analyze this Git commit and provide a concise, helpful summary. Focus on:

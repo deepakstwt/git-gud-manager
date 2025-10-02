@@ -430,4 +430,276 @@ export const projectRouter = createTRPCRouter({
 
       return questions;
     }),
-});
+
+  getTeamMembers: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      // Get all team members for this project
+      const teamMembers = await ctx.db.userToProject.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+              emailAddress: true,
+              createdAt: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      // Transform the data to match the expected format
+      return teamMembers.map(member => ({
+        id: member.user.id,
+        name: `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() || 'Unknown User',
+        email: member.user.emailAddress,
+        avatar: member.user.imageUrl || '',
+        initials: `${member.user.firstName?.[0] || ''}${member.user.lastName?.[0] || ''}`.toUpperCase() || 'U',
+        role: 'Team Member', // You can add a role field to UserToProject if needed
+        joinedAt: member.createdAt,
+      }));
+    }),
+
+  addTeamMember: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        email: z.string().email(),
+        name: z.string().optional(),
+        role: z.string().optional().default('Team Member'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      // Try to find existing user by email
+      let user = await ctx.db.user.findUnique({
+        where: {
+          emailAddress: input.email,
+        },
+      });
+
+      // If user doesn't exist, create a new user
+      if (!user) {
+        // Parse name if provided
+        const nameParts = input.name?.split(' ') || [];
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        user = await ctx.db.user.create({
+          data: {
+            emailAddress: input.email,
+            firstName: firstName,
+            lastName: lastName,
+            // Generate a temporary ID for the user
+            id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          },
+        });
+      }
+
+      // Check if user is already a team member
+      const existingMember = await ctx.db.userToProject.findUnique({
+        where: {
+          userId_projectId: {
+            userId: user.id,
+            projectId: input.projectId,
+          },
+        },
+      });
+
+      if (existingMember) {
+        throw new Error("User is already a team member of this project");
+      }
+
+      // Add user to project
+      const newMember = await ctx.db.userToProject.create({
+        data: {
+          userId: user.id,
+          projectId: input.projectId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              imageUrl: true,
+              emailAddress: true,
+              createdAt: true,
+            },
+          },
+        },
+      });
+
+      return {
+        id: newMember.user.id,
+        name: `${newMember.user.firstName || ''} ${newMember.user.lastName || ''}`.trim() || 'New User',
+        email: newMember.user.emailAddress,
+        avatar: newMember.user.imageUrl || '',
+        initials: `${newMember.user.firstName?.[0] || ''}${newMember.user.lastName?.[0] || ''}`.toUpperCase() || 'U',
+        role: input.role,
+        joinedAt: newMember.createdAt,
+        isNewUser: !existingMember, // Flag to indicate if this is a new user
+      };
+    }),
+
+  removeTeamMember: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      // Don't allow removing yourself
+      if (input.userId === ctx.userId) {
+        throw new Error("You cannot remove yourself from the project");
+      }
+
+      // Remove user from project
+      await ctx.db.userToProject.delete({
+        where: {
+          userId_projectId: {
+            userId: input.userId,
+            projectId: input.projectId,
+          },
+        },
+      });
+
+      return { success: true };
+    }),
+
+  exportProjectData: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        format: z.string(),
+        dateRange: z.string(),
+        includeData: z.object({
+          commits: z.boolean(),
+          comments: z.boolean(),
+          team: z.boolean(),
+          meetings: z.boolean(),
+          analytics: z.boolean(),
+        }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verify the user has access to this project
+      const project = await ctx.db.project.findFirst({
+        where: {
+          id: input.projectId,
+          UserToProjects: {
+            some: {
+              userId: ctx.userId,
+            },
+          },
+          deletedAt: null,
+        },
+      });
+
+      if (!project) {
+        throw new Error("Project not found or access denied");
+      }
+
+      // Get user email for notification
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.userId },
+        select: { emailAddress: true, firstName: true, lastName: true },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // In a real implementation, you would:
+      // 1. Queue the export job (using a job queue like Bull, Agenda, etc.)
+      // 2. Process the data asynchronously
+      // 3. Generate the export file (JSON, CSV, XLSX, PDF)
+      // 4. Upload to cloud storage (AWS S3, Google Cloud Storage, etc.)
+      // 5. Send email with download link
+
+      // For now, we'll simulate the process
+      console.log(`📊 Export initiated for project: ${project.name}`);
+      console.log(`📧 Export will be sent to: ${user.emailAddress}`);
+      console.log(`📋 Export options:`, input);
+
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // In production, you would:
+      // - Create a background job
+      // - Process the data
+      // - Generate the file
+      // - Send email notification
+
+      return {
+        success: true,
+        message: "Export started! You will receive an email when ready.",
+        exportId: `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        estimatedTime: "5-10 minutes",
+      };
+    }),
+
+  });

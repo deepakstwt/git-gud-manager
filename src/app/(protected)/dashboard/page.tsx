@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import RepositoryLoader from "@/components/repository-loader";
 import { EnhancedRAGComponent } from "@/components/enhanced-rag";
+import CommitIntelligenceDashboard from "@/components/CommitIntelligenceDashboard";
 import { AICodeAssistantCard } from "@/components/AICodeAssistantCard";
 import { 
   RefreshCcw, 
@@ -32,9 +33,13 @@ import {
   Bot,
   Zap
 } from "lucide-react";
+import { InviteMemberModal } from "@/components/InviteMemberModal";
+import { ArchiveProjectModal } from "@/components/ArchiveProjectModal";
+import { ExportDataModal } from "@/components/ExportDataModal";
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { api } from '@/trpc/react';
+import { toast } from 'sonner';
 
 // CommitLog Component
 interface CommitLogProps {
@@ -405,6 +410,11 @@ const DashboardPage = () => {
   const { refetchProjects } = useRefetch();
   const [isMounted, setIsMounted] = useState(false);
   const [meetingFile, setMeetingFile] = useState<File | null>(null);
+  
+  // Modal states
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Add background gradient wrapper class to body
   useEffect(() => {
@@ -435,21 +445,89 @@ const handleQuestionSaved = () => {
   };
 
   const inviteTeamMember = () => {
-    // TODO: Implement team member invitation
-    console.log('Inviting team member...');
+    setIsInviteModalOpen(true);
   };
 
   const archiveProject = () => {
-    // TODO: Implement project archiving
-    console.log('Archiving project...');
+    setIsArchiveModalOpen(true);
   };
 
-  // Mock team members data (replace with real data later)
-  const teamMembers = [
-    { id: '1', name: 'John Doe', avatar: '', initials: 'JD' },
-    { id: '2', name: 'Jane Smith', avatar: '', initials: 'JS' },
-    { id: '3', name: 'Mike Johnson', avatar: '', initials: 'MJ' },
-  ];
+  const exportData = () => {
+    setIsExportModalOpen(true);
+  };
+
+  const addTeamMemberMutation = api.project.addTeamMember.useMutation({
+    onSuccess: (data) => {
+      if (data.isNewUser) {
+        toast.success("New team member created and added successfully!");
+      } else {
+        toast.success("Team member added successfully!");
+      }
+      refetchTeamMembers();
+      setIsInviteModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add team member");
+    },
+  });
+
+  const handleInviteMember = (data: any) => {
+    if (!projectId) {
+      toast.error("No project selected");
+      return;
+    }
+    
+    addTeamMemberMutation.mutate({
+      projectId,
+      email: data.email,
+      name: data.name,
+      role: data.role,
+    });
+  };
+
+  const handleArchiveProject = (reason: string) => {
+    console.log('Archiving project with reason:', reason);
+    // TODO: Implement actual API call
+  };
+
+  const exportDataMutation = api.project.exportProjectData.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.message);
+      setIsExportModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to start export");
+    },
+  });
+
+  const handleExportData = (options: any) => {
+    if (!projectId) {
+      toast.error("No project selected");
+      return;
+    }
+    
+    exportDataMutation.mutate({
+      projectId,
+      format: options.format,
+      dateRange: options.dateRange,
+      includeData: options.includeData,
+    });
+  };
+
+  // Fetch real team members from database
+  const { data: teamMembers = [], isLoading: teamMembersLoading, refetch: refetchTeamMembers } = api.project.getTeamMembers.useQuery(
+    { projectId: projectId || '' },
+    { enabled: !!projectId }
+  );
+
+  // Debug logging
+  console.log("Dashboard state:", {
+    isMounted,
+    projects: projects?.length || 0,
+    project: project?.name || "none",
+    projectId,
+    user: user ? "authenticated" : "not authenticated"
+  });
 
   if (!isMounted) {
     return (
@@ -492,7 +570,8 @@ const handleQuestionSaved = () => {
   }
 
   return (
-    <div className="relative w-full min-h-screen dashboard-content">
+    <>
+    <div className="relative w-full min-h-screen main-dashboard-container">
       {/* Flyhyer-Inspired Ambient Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-background" />
@@ -540,7 +619,9 @@ const handleQuestionSaved = () => {
               {/* Metrics Bar */}
               <div className="flex flex-wrap justify-center gap-8 mt-12">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">{teamMembers.length}</div>
+                  <div className="text-3xl font-bold text-primary mb-1">
+                    {teamMembersLoading ? '...' : teamMembers.length}
+                  </div>
                   <div className="text-sm text-muted-foreground uppercase tracking-wider">Team Members</div>
                 </div>
                 <div className="text-center">
@@ -595,104 +676,194 @@ const handleQuestionSaved = () => {
           </div>
         )}
 
-        {/* Sophisticated Team Management */}
-        <div className="w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Team Overview */}
-            <div className="lg:col-span-2 luxury-card">
+        {/* Team Collaboration Section - Full Width Row */}
+        <div className="w-full mb-12">
+          <div className="team-collaboration-section luxury-card">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
+                      <Users className="w-6 h-6 text-primary" />
+                    </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">Team Collaboration</h3>
-                    <p className="text-muted-foreground">Manage your project team and access controls</p>
+                      <h2 className="text-3xl font-bold text-foreground">Team Collaboration</h2>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span className="text-sm text-green-600 font-medium">Active Team</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-muted-foreground text-lg">Build, collaborate, and innovate together</p>
+                    <p className="text-sm text-muted-foreground/80">Invite talented developers, designers, and contributors to join your project journey</p>
+                  </div>
                   </div>
                   
                   <Button 
                     onClick={inviteTeamMember}
-                    className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white shadow-lg"
+                  className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white shadow-lg hover:shadow-xl rounded-xl h-14 px-8 transition-all duration-200 group"
                   >
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Invite Member
+                  <UserPlus className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold">Invite Member</span>
                   </Button>
                 </div>
                 
                 {/* Team Members Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {teamMembers.map((member) => (
-                    <div key={member.id} className="group">
-                      <div className="glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300">
-                        <div className="relative inline-block mb-3">
-                          <Avatar className="w-12 h-12 border-2 border-primary/30 shadow-lg">
+                <div className="team-members-grid">
+                  {teamMembersLoading ? (
+                    // Loading state for team members
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="glass-card team-member-card rounded-2xl p-6 border-0 text-center animate-pulse">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/20"></div>
+                        <div className="h-4 bg-muted/20 rounded w-3/4 mx-auto mb-2"></div>
+                        <div className="h-3 bg-muted/20 rounded w-1/2 mx-auto"></div>
+                      </div>
+                    ))
+                  ) : teamMembers.length === 0 ? (
+                    // Empty state
+                    <div className="col-span-full text-center py-16">
+                      <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
+                        <Users className="w-10 h-10 text-primary" />
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-2xl font-bold text-foreground">Build Your Dream Team</h3>
+                        <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                          Every great project starts with great people. Invite talented developers, designers, and contributors to join your journey.
+                        </p>
+                        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span>Collaborate</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span>Innovate</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <span>Create</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={inviteTeamMember}
+                        className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white mt-8 h-12 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                      >
+                        <UserPlus className="w-5 h-5 mr-2" />
+                        <span className="font-semibold">Invite First Member</span>
+                      </Button>
+                    </div>
+                  ) : (
+                    teamMembers.map((member, index) => (
+                    <div key={member.id} className="glass-card team-member-card cursor-pointer group">
+                      <div className="status"></div>
+                      <div className="avatar">
+                        <Avatar className="w-full h-full">
                 <AvatarImage src={member.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-bold">
+                          <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-bold text-lg">
                   {member.initials}
                 </AvatarFallback>
               </Avatar>
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 border-2 border-background rounded-full shadow-sm" />
                         </div>
-                        <h4 className="font-semibold text-foreground text-sm">{member.name}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">Team Member</p>
+                      <div className="space-y-2">
+                      <h4 className="name">{member.name}</h4>
+                      <p className="role">Team Member</p>
+                        <div className="flex items-center justify-center gap-2 mt-3">
+                          <div className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                            <span className="text-xs text-green-600 font-medium">Active</span>
+                          </div>
+                          <div className="w-1 h-1 rounded-full bg-muted-foreground/40"></div>
+                          <span className="text-xs text-muted-foreground">Contributor</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs text-primary font-bold">#{index + 1}</span>
+                        </div>
+                      </div>
+                      </div>
+                    ))
+                  )}
                   
                   {/* Add Member Card */}
-                  <div className="group">
-                    <button 
-                      onClick={inviteTeamMember}
-                      className="w-full glass-card rounded-2xl p-4 border-0 text-center transition-all duration-300"
-                    >
-                      <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
-                        <UserPlus className="w-6 h-6 text-primary" />
+                  <button 
+                    onClick={inviteTeamMember}
+                    className="glass-card add-member-card cursor-pointer group"
+                  >
+                    <div className="add-icon group-hover:scale-110 transition-transform duration-300">
+                      <UserPlus className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="space-y-2">
+                    <h4 className="add-text">Add Member</h4>
+                    <p className="add-subtitle">Invite to team</p>
+                      <div className="flex items-center justify-center gap-2 mt-3">
+                        <div className="flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                          <span className="text-xs text-primary font-medium">Ready</span>
+                        </div>
+                        <div className="w-1 h-1 rounded-full bg-muted-foreground/40"></div>
+                        <span className="text-xs text-muted-foreground">Invite</span>
                       </div>
-                      <h4 className="font-semibold text-primary text-sm">Add Member</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Invite to team</p>
-                    </button>
-                  </div>
+                    </div>
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span className="text-xs text-primary font-bold">+</span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
                 </div>
               </div>
             </div>
 
-            {/* Project Actions */}
-            <div className="space-y-6">
-              <div className="luxury-card">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-destructive/20 to-orange-500/20 flex items-center justify-center border border-destructive/30">
-                    <Archive className="w-8 h-8 text-destructive" />
+        {/* Project Actions Section - Second Row */}
+        <div className="w-full mb-12">
+          <div className="project-actions-row">
+            {/* Archive Project Card */}
+            <div className="luxury-card project-action-card group">
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-destructive/20 to-orange-500/20 flex items-center justify-center border-2 border-destructive/30 group-hover:from-destructive/30 group-hover:to-orange-500/30 transition-all duration-300">
+                    <Archive className="w-10 h-10 text-destructive group-hover:scale-110 transition-transform duration-300" />
           </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-2">Archive Project</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
+                  <div className="space-y-3">
+                    <h4 className="font-bold text-foreground text-lg">Archive Project</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Archive this project to preserve data while removing from active projects
                     </p>
           <Button 
             variant="outline" 
                       onClick={archiveProject}
-                      className="w-full magnetic-button border-destructive/30 text-destructive"
+                      className="w-full h-12 magnetic-button border-destructive/30 text-destructive hover:bg-destructive/10 rounded-xl transition-all duration-200"
                     >
+                      <Archive className="w-4 h-4 mr-2" />
                       Archive Project
           </Button>
                   </div>
                 </div>
         </div>
         
-              <div className="luxury-card">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center border border-blue-500/30">
-                    <FileText className="w-8 h-8 text-blue-400" />
+            {/* Export Data Card */}
+            <div className="luxury-card project-action-card group">
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center border-2 border-blue-500/30 group-hover:from-blue-500/30 group-hover:to-cyan-500/30 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-2">Export Data</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
+                  <div className="space-y-3">
+                    <h4 className="font-bold text-foreground text-lg">Export Data</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       Export project data and analytics for external reporting
                     </p>
         <Button 
           variant="outline" 
-                      className="w-full magnetic-button border-blue-500/30 text-blue-400"
+                      onClick={exportData}
+                      className="w-full h-12 magnetic-button border-blue-500/30 text-blue-400 hover:bg-blue-500/10 rounded-xl transition-all duration-200"
                     >
+                      <FileText className="w-4 h-4 mr-2" />
                       Export Data
         </Button>
-      </div>
                 </div>
               </div>
             </div>
@@ -700,7 +871,7 @@ const handleQuestionSaved = () => {
         </div>
 
         {/* Flyhyer-Style Feature Showcase */}
-        <div className="w-full space-y-8">
+        <div className="w-full space-y-8 mt-12">
           {/* AI Assistant - Full Width Hero */}
           <div className="luxury-card">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -725,35 +896,46 @@ const handleQuestionSaved = () => {
                   </p>
                 </div>
                 
-                <div className="flex items-center gap-6">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary mb-1">∞</div>
+                <div className="flex items-center gap-8">
+                  <div className="text-center group">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-400/30 glow-pulse">
+                      <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">∞</span>
+                    </div>
+                    <div className="text-sm font-semibold text-foreground mb-1">Unlimited</div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wider">Questions</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-secondary mb-1">24/7</div>
+                  <div className="text-center group">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-green-500/20 to-cyan-500/20 flex items-center justify-center border border-green-400/30 glow-pulse">
+                      <span className="text-2xl font-bold bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">24/7</span>
+                    </div>
+                    <div className="text-sm font-semibold text-foreground mb-1">Always</div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wider">Available</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-accent mb-1">AI</div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Enhanced</div>
+                  <div className="text-center group">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center border border-pink-400/30 glow-pulse">
+                      <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">AI</span>
+                    </div>
+                    <div className="text-sm font-semibold text-foreground mb-1">Powered</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Intelligence</div>
                   </div>
                 </div>
               </div>
               
-              <div className="relative">
-                <div className="glass-card rounded-3xl p-8 border-0">
+              <div className="relative group">
+                <div className="glass-card rounded-3xl p-8 border-0 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group-hover:scale-[1.02]">
                   <AICodeAssistantCard />
                 </div>
-                {/* Floating accent elements */}
-                <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-2xl opacity-60 floating" />
-                <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-br from-accent to-secondary rounded-xl opacity-40 floating-delayed" />
+                {/* Enhanced floating accent elements */}
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl opacity-60 floating glow-pulse" />
+                <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl opacity-40 floating-delayed glow-pulse" />
+                <div className="absolute top-1/2 -right-2 w-4 h-4 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full opacity-30 floating-slow" />
+                <div className="absolute -top-2 left-1/2 w-3 h-3 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-50 floating-slow-delayed" />
               </div>
             </div>
           </div>
 
           {/* Meeting Intelligence - Full Width */}
-          <div className="w-full">
+          <div className="w-full mt-12">
             <div className="luxury-card group">
               <div className="relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-accent/20 to-transparent rounded-bl-3xl" />
@@ -826,7 +1008,7 @@ const handleQuestionSaved = () => {
       </div>
 
         {/* Advanced Features Section */}
-        <div className="w-full space-y-8">
+        <div className="w-full space-y-8 mt-12">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl md:text-4xl font-bold">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -839,27 +1021,27 @@ const handleQuestionSaved = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Commit Intelligence */}
-            <div className="luxury-card">
-              <div className="space-y-6">
+          <div className="space-y-8">
+            {/* Commit Intelligence - Full Width */}
+            <div className="commit-intelligence-section">
+              <div className="commit-intelligence-header">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center border border-emerald-500/30">
-                    <Github className="w-7 h-7 text-emerald-400" />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center border border-emerald-500/30 shadow-lg">
+                    <Github className="w-8 h-8 text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-foreground mb-1">Commit Intelligence</h3>
-                    <p className="text-muted-foreground">AI-powered commit analysis and insights</p>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">Commit Intelligence</h3>
+                    <p className="text-muted-foreground text-lg">AI-powered commit analysis and insights</p>
                   </div>
                 </div>
-                
-                <div className="glass-card rounded-2xl p-6 border-0">
-        <CommitLog project={project} />
-      </div>
+              </div>
+              
+              <div className="commit-intelligence-content">
+                <CommitIntelligenceDashboard projectId={project.id} projectName={project.name} />
               </div>
             </div>
 
-            {/* Repository Management */}
+            {/* Repository Management - Full Width Below */}
             <div className="luxury-card">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -870,10 +1052,10 @@ const handleQuestionSaved = () => {
                     <h3 className="text-xl font-bold text-foreground mb-1">Repository Sync</h3>
                     <p className="text-muted-foreground">Advanced repository loading and processing</p>
                   </div>
-      </div>
+                </div>
 
                 <div className="glass-card rounded-2xl p-6 border-0">
-        <RepositoryLoader />
+                  <RepositoryLoader />
                 </div>
               </div>
             </div>
@@ -881,7 +1063,7 @@ const handleQuestionSaved = () => {
       </div>
 
         {/* RAG Intelligence - Premium Full Width */}
-        <div className="w-full">
+        <div className="w-full mt-12">
           <div className="luxury-card">
             <div className="relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/5 to-transparent" />
@@ -896,7 +1078,7 @@ const handleQuestionSaved = () => {
         </div>
 
         {/* Project Metadata - Elegant Footer */}
-        <div className="w-full">
+        <div className="w-full mt-12">
           <div className="luxury-card">
             <div className="text-center space-y-8">
               <div className="space-y-4">
@@ -945,7 +1127,7 @@ const handleQuestionSaved = () => {
                     <h4 className="font-bold text-foreground mb-2">Team Size</h4>
                     <div className="glass-card rounded-xl p-4 border-0">
                       <div className="text-sm font-medium">
-                        {teamMembers.length} active members
+                        {teamMembersLoading ? '...' : teamMembers.length} active members
                       </div>
                     </div>
                   </div>
@@ -955,7 +1137,28 @@ const handleQuestionSaved = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Modals */}
+      <InviteMemberModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onInvite={handleInviteMember}
+      />
+
+      <ArchiveProjectModal
+        isOpen={isArchiveModalOpen}
+        onClose={() => setIsArchiveModalOpen(false)}
+        onArchive={handleArchiveProject}
+        projectName={project?.name}
+      />
+
+      <ExportDataModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={handleExportData}
+        projectName={project?.name}
+      />
+    </>
   );
 }
 

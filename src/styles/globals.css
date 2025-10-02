@@ -2,6 +2,68 @@
 @import "tw-animate-css";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
+/* Enhanced Animations for GitAid */
+@keyframes grid-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
+}
+
+@keyframes floating-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes floating-slow-delayed {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-180deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(147, 51, 234, 0.4); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Enhanced Animation Classes */
+.floating-slow {
+  animation: floating-slow 8s ease-in-out infinite;
+}
+
+.floating-slow-delayed {
+  animation: floating-slow-delayed 10s ease-in-out infinite;
+}
+
+.shimmer-loading {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
 /* Flyhyer-Inspired Premium Design System */
 @layer base {
   :root {
@@ -729,16 +791,37 @@ a:hover {
   [data-slot="sidebar-inset"] > * {
     margin-left: 1.5rem; /* Add 1.5rem spacing from sidebar */
     padding-left: 0 !important;
+    margin-right: 1.5rem; /* Add right margin to prevent overflow */
+    max-width: calc(100vw - 4rem - 1.5rem - 1.5rem); /* Account for sidebar width and margins */
   }
-  
+
   /* Ensure the main content glass card has proper spacing */
   [data-slot="sidebar-inset"] .glass-card {
     margin-left: 1.5rem !important;
+    margin-right: 1.5rem !important; /* Add right margin for better spacing */
+    max-width: calc(100vw - 4rem - 3rem); /* Account for sidebar width and margins */
   }
-  
-  /* Add some padding to the main content area */
-  [data-slot="sidebar-inset"] .glass-card {
-    margin-right: 1rem !important; /* Add right margin for better spacing */
+
+  /* Ensure dashboard content doesn't overflow */
+  .dashboard-content {
+    max-width: calc(100vw - 4rem - 3rem) !important; /* Account for sidebar and margins */
+    width: 100% !important;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+  }
+
+  /* Add responsive padding to prevent overflow on smaller screens */
+  @media (max-width: 768px) {
+    [data-slot="sidebar-inset"] > * {
+      margin-left: 1rem;
+      margin-right: 1rem;
+      max-width: calc(100vw - 2rem);
+    }
+    
+    [data-slot="sidebar-inset"] .glass-card {
+      margin-left: 1rem !important;
+      margin-right: 1rem !important;
+      max-width: calc(100vw - 2rem);
+    }
   }
   
   /* Manual Sidebar Behavior - controlled by React state */
@@ -758,14 +841,950 @@ a:hover {
   
   /* Content visibility is now handled by React state, no CSS needed */
   
-  /* Sizing is now handled by React state, no CSS needed */
+  /* Enhanced Visual Effects */
+  .luxury-card {
+    background: var(--gradient-surface);
+    border: 1px solid rgba(var(--glass-border));
+    border-radius: 1.5rem;
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+    padding: 2rem;
+    transition: all var(--duration-normal) var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .luxury-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-glass);
+    opacity: 0;
+    transition: opacity var(--duration-normal) ease;
+    pointer-events: none;
+  }
+  
+  .luxury-card:hover::after {
+    opacity: 0.1;
+  }
+  
+  .luxury-card:hover {
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.2),
+      0 8px 24px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.12);
+    transform: translateY(-4px);
+  }
+  
+  /* Enhanced Glass Card */
+  .glass-card {
+    background: rgba(var(--glass-bg));
+    backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid rgba(var(--glass-border));
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all var(--duration-normal) var(--ease-in-out-cubic);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-glass);
+    opacity: 0.6;
+  }
+  
+  .glass-card:hover {
+    box-shadow: 
+      0 12px 48px rgba(0, 0, 0, 0.18),
+      0 4px 16px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Enhanced Button Hover Effects */
+  .magnetic-button {
+    position: relative;
+    transition: all var(--duration-normal) var(--ease-spring);
+    transform-style: preserve-3d;
+  }
+  
+  .magnetic-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .magnetic-button:active {
+    transform: translateY(0);
+  }
+  
+  /* Team Member Card Shadows */
+  .team-member-card {
+    box-shadow: 
+      0 6px 24px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(255, 255, 255, 0.04);
+    transition: all var(--duration-normal) var(--ease-spring);
+  }
+  
+  .team-member-card:hover {
+    box-shadow: 
+      0 16px 40px rgba(0, 0, 0, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+    transform: translateY(-4px) scale(1.02);
+  }
+  
+  /* Modal Enhanced Shadows */
+  .modal-enhanced {
+    box-shadow: 
+      0 25px 80px rgba(0, 0, 0, 0.25),
+      0 8px 32px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Add Member Card Special Shadow */
+  .add-member-card {
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04),
+      0 0 0 1px rgba(var(--primary), 0.1);
+    transition: all var(--duration-normal) var(--ease-spring);
+  }
+  
+  .add-member-card:hover {
+    box-shadow: 
+      0 12px 32px rgba(var(--primary), 0.15),
+      0 4px 16px rgba(var(--primary), 0.1),
+      0 0 0 1px rgba(var(--primary), 0.2);
+    transform: translateY(-2px) scale(1.02);
+  }
   
   /* Sidebar Inner Content Responsive */
   .dashboard-content {
-    max-width: none !important;
+    max-width: calc(100vw - 4rem - 3rem) !important; /* Account for sidebar and margins */
     width: 100% !important;
     padding-left: 2rem;
     padding-right: 2rem;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+  }
+
+  /* Much smaller cards for compact layout */
+  .main-dashboard-container .glass-card {
+    transform: scale(0.95); /* Reduced to -5% scaling for smaller cards */
+    transform-origin: top left;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin-bottom: 1rem; /* Compact spacing */
+    padding: 1rem; /* Smaller padding */
+  }
+
+  /* Add extra spacing for the main dashboard glass card */
+  .main-dashboard-container .glass-card:first-child {
+    margin-bottom: 2rem; /* More space after the main card */
+  }
+
+
+  /* Project Actions Row Layout */
+  .main-dashboard-container .project-actions-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 3rem; /* Additional bottom margin for better spacing */
+  }
+
+  /* Project Action Cards */
+  .main-dashboard-container .project-action-card {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.3);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Add subtle glow effect on hover for project action cards */
+  .main-dashboard-container .project-action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .main-dashboard-container .project-action-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Hover effects for project action cards */
+  .main-dashboard-container .project-action-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.12),
+      0 8px 16px rgba(0, 0, 0, 0.08),
+      0 0 0 1px hsl(var(--border) / 0.3);
+    border-color: hsl(var(--border) / 0.5);
+  }
+
+  /* Team collaboration section container */
+  .main-dashboard-container .team-collaboration-section {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    border: 1px solid hsl(var(--border) / 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Add subtle animated background elements */
+  .main-dashboard-container .team-collaboration-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, hsl(var(--primary) / 0.03) 0%, transparent 70%);
+    animation: float 20s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, -30px) rotate(120deg); }
+    66% { transform: translate(-20px, 20px) rotate(240deg); }
+  }
+
+  /* Team collaboration header */
+  .main-dashboard-container .team-collaboration-section h2 {
+    font-size: 2rem; /* Larger, more prominent title */
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: hsl(var(--foreground));
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--muted-foreground)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .main-dashboard-container .team-collaboration-section p {
+    font-size: 1rem;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* Team members grid - modern centered layout */
+  .main-dashboard-container .team-members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+    justify-items: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Individual team member card styling - modern minimalist */
+  .main-dashboard-container .team-member-card {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.3);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    min-height: 200px;
+    width: 100%;
+    max-width: 320px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Add subtle glow effect on hover */
+  .main-dashboard-container .team-member-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .main-dashboard-container .team-member-card:hover::before {
+    opacity: 1;
+  }
+
+  .main-dashboard-container .team-member-card .avatar {
+    width: 4rem; /* Larger avatar for emphasis */
+    height: 4rem;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem auto;
+    border: 3px solid hsl(var(--border) / 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .main-dashboard-container .team-member-card .name {
+    font-size: 1.25rem; /* Larger, bolder name */
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  .main-dashboard-container .team-member-card .role {
+    font-size: 0.95rem;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .main-dashboard-container .team-member-card .status {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    background: hsl(142, 76%, 36%);
+    border-radius: 50%;
+    border: 3px solid hsl(var(--card));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Add member card - modern minimalist design */
+  .main-dashboard-container .add-member-card {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(20px);
+    border: 2px dashed hsl(var(--border) / 0.4);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    min-height: 200px;
+    width: 100%;
+    max-width: 320px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.05),
+      0 1px 4px rgba(0, 0, 0, 0.02);
+  }
+
+  .main-dashboard-container .add-member-card .add-icon {
+    width: 4rem; /* Same size as avatar */
+    height: 4rem;
+    border-radius: 50%;
+    background: hsl(var(--primary) / 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    transition: all 0.3s ease;
+    border: 2px solid hsl(var(--primary) / 0.2);
+  }
+
+  .main-dashboard-container .add-member-card .add-text {
+    font-size: 1.25rem; /* Same as member name */
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  .main-dashboard-container .add-member-card .add-subtitle {
+    font-size: 0.95rem; /* Same as role text */
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  /* Hover effects for team member cards - subtle and modern */
+  .main-dashboard-container .team-member-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.12),
+      0 8px 16px rgba(0, 0, 0, 0.08),
+      0 0 0 1px hsl(var(--border) / 0.3);
+    border-color: hsl(var(--border) / 0.5);
+  }
+
+  .main-dashboard-container .team-member-card:hover .avatar {
+    transform: scale(1.05);
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .main-dashboard-container .team-member-card:hover .name {
+    color: hsl(var(--primary));
+  }
+
+  /* Hover effects for add member card - subtle and modern */
+  .main-dashboard-container .add-member-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: hsl(var(--primary) / 0.6);
+    background: hsl(var(--card) / 0.8);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.08),
+      0 8px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .main-dashboard-container .add-member-card:hover .add-icon {
+    transform: scale(1.05);
+    background: hsl(var(--primary) / 0.2);
+    border-color: hsl(var(--primary) / 0.4);
+  }
+
+  .main-dashboard-container .add-member-card:hover .add-text {
+    color: hsl(var(--primary));
+  }
+
+  /* Focus states for accessibility */
+  .main-dashboard-container .team-member-card:focus-visible,
+  .main-dashboard-container .add-member-card:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
+  /* Active states */
+  .main-dashboard-container .team-member-card:active,
+  .main-dashboard-container .add-member-card:active {
+    transform: scale(1.02) translateY(-2px); /* Subtle press effect */
+  }
+
+  /* Repository connected card - much smaller */
+  .main-dashboard-container .repository-card {
+    transform: scale(0.98); /* Much smaller scaling */
+    transform-origin: top left;
+    padding: 1.25rem; /* Smaller padding */
+    min-height: 140px; /* Much smaller height */
+  }
+
+  /* Metrics cards - much smaller */
+  .main-dashboard-container .metrics-card {
+    transform: scale(0.95); /* Much smaller scaling */
+    transform-origin: top left;
+    padding: 1rem; /* Smaller padding */
+    min-height: 120px; /* Much smaller height */
+  }
+
+  /* Smaller text sizing for compact cards */
+  .main-dashboard-container .glass-card h1 {
+    font-size: 1.5rem; /* Smaller main titles */
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-dashboard-container .glass-card h2 {
+    font-size: 1.25rem; /* Smaller section titles */
+    line-height: 1.3;
+    margin-bottom: 0.375rem;
+  }
+
+  .main-dashboard-container .glass-card h3 {
+    font-size: 1.125rem; /* Smaller subsection titles */
+    line-height: 1.4;
+    margin-bottom: 0.375rem;
+  }
+
+  .main-dashboard-container .glass-card p {
+    font-size: 0.875rem; /* Smaller paragraph text */
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Smaller button sizing for compact cards */
+  .main-dashboard-container .glass-card .btn,
+  .main-dashboard-container .glass-card button {
+    padding: 0.5rem 1rem; /* Smaller button padding */
+    font-size: 0.8rem; /* Smaller button text */
+    min-height: 36px; /* Smaller touch target */
+    border-radius: 0.375rem; /* Smaller rounded corners */
+  }
+
+  /* Smaller form elements for compact cards */
+  .main-dashboard-container .glass-card input,
+  .main-dashboard-container .glass-card textarea,
+  .main-dashboard-container .glass-card select {
+    padding: 0.5rem 0.75rem; /* Smaller input padding */
+    font-size: 0.8rem; /* Smaller input text */
+    border-radius: 0.25rem; /* Smaller rounded corners */
+  }
+
+  /* Balanced icons */
+  .main-dashboard-container .glass-card .icon,
+  .main-dashboard-container .glass-card svg {
+    width: 1.1em; /* Slightly larger icons */
+    height: 1.1em;
+  }
+
+  /* Balanced badges */
+  .main-dashboard-container .glass-card .badge {
+    padding: 0.375rem 0.75rem; /* Comfortable badge padding */
+    font-size: 0.8rem; /* Readable badge text */
+    border-radius: 0.75rem; /* Maintain rounded corners */
+  }
+
+  /* Fix any grid layouts that might overflow */
+  .dashboard-content .grid,
+  .main-dashboard-container .grid {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Commit Intelligence specific spacing improvements */
+  .main-dashboard-container .commit-intelligence-card {
+    margin-right: 0.5rem; /* Add right margin to prevent edge touching */
+  }
+
+  .main-dashboard-container .commit-stats-card {
+    margin-right: 0.25rem; /* Small right margin for stats cards */
+  }
+
+  .main-dashboard-container .filter-controls {
+    margin-right: 0.5rem; /* Right margin for filter controls */
+  }
+
+  /* Commit Intelligence Section Styling */
+  .commit-intelligence-section {
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(10, 10, 10, 0.9) 50%,
+      rgba(0, 0, 0, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.3),
+      0 10px 20px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .commit-intelligence-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(var(--primary) / 0.3) 50%, 
+      transparent 100%);
+  }
+
+  .commit-intelligence-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.2);
+  }
+
+  .commit-intelligence-content {
+    background: linear-gradient(135deg, 
+      rgba(15, 15, 15, 0.9) 0%, 
+      rgba(20, 20, 20, 0.8) 50%,
+      rgba(15, 15, 15, 0.9) 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 15px 30px rgba(0, 0, 0, 0.4),
+      0 5px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Commit Intelligence Dashboard Styling */
+  .commit-intelligence-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .commit-intelligence-dashboard .grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  .commit-intelligence-dashboard .grid.grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .commit-intelligence-dashboard .grid.md\\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    .commit-intelligence-dashboard .grid.md\\:grid-cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .commit-intelligence-dashboard .grid.md\\:grid-cols-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Stats Cards in Commit Intelligence */
+  .commit-intelligence-dashboard .commit-stats-card {
+    background: linear-gradient(135deg, 
+      rgba(30, 30, 30, 0.95) 0%, 
+      rgba(40, 40, 40, 0.9) 50%,
+      rgba(30, 30, 30, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.5),
+      0 10px 20px rgba(0, 0, 0, 0.3),
+      0 5px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .commit-intelligence-dashboard .commit-stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.6),
+      0 15px 30px rgba(0, 0, 0, 0.4),
+      0 8px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Filter Controls in Commit Intelligence */
+  .commit-intelligence-dashboard .filter-controls {
+    background: linear-gradient(135deg, 
+      rgba(25, 25, 25, 0.9) 0%, 
+      rgba(35, 35, 35, 0.8) 50%,
+      rgba(25, 25, 25, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    box-shadow: 
+      0 15px 30px rgba(0, 0, 0, 0.4),
+      0 8px 16px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Horizontal scrolling for commit cards */
+  .commit-horizontal-scroll {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 2rem 0.5rem 1rem; /* Add left and right padding for better spacing */
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    -webkit-overflow-scrolling: touch;
+    margin-right: -1rem; /* Compensate for container padding */
+  }
+
+  /* Hide scrollbar for webkit browsers */
+  .commit-horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .commit-horizontal-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .commit-horizontal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+
+  .commit-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Individual commit cards in horizontal scroll */
+  .commit-horizontal-scroll .commit-intelligence-card {
+    flex: 0 0 400px; /* Fixed width for consistent card size */
+    min-width: 400px;
+    max-width: 400px;
+    margin-right: 0;
+    transform: none; /* Remove scaling for horizontal layout */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, 
+      rgba(20, 20, 20, 0.95) 0%, 
+      rgba(30, 30, 30, 0.9) 50%,
+      rgba(20, 20, 20, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.5),
+      0 10px 20px rgba(0, 0, 0, 0.3),
+      0 5px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Hover effect for horizontal commit cards */
+  .commit-horizontal-scroll .commit-intelligence-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.7),
+      0 15px 30px rgba(0, 0, 0, 0.5),
+      0 8px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* Smooth scrolling indicators */
+  .commit-horizontal-scroll::before,
+  .commit-horizontal-scroll::after {
+    content: '';
+    position: sticky;
+    top: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(to right, hsl(var(--background)), transparent);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .commit-horizontal-scroll::before {
+    left: 0;
+    background: linear-gradient(to right, hsl(var(--background)), transparent);
+  }
+
+  .commit-horizontal-scroll::after {
+    right: 0;
+    background: linear-gradient(to left, hsl(var(--background)), transparent);
+  }
+
+  /* Ensure team members grid doesn't overflow */
+  .main-dashboard-container .grid.grid-cols-2,
+  .main-dashboard-container .grid.md\\:grid-cols-3 {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Ensure cards within grids don't overflow */
+  .main-dashboard-container .grid > * {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Compact grid layouts */
+  .main-dashboard-container .grid {
+    gap: 1rem; /* Smaller gap between grid items */
+    margin-bottom: 1rem; /* Smaller spacing for grids */
+  }
+
+  /* Much smaller individual grid items */
+  .main-dashboard-container .grid .glass-card {
+    transform: scale(0.95); /* Much smaller scaling */
+    transform-origin: top left;
+    padding: 1rem; /* Smaller padding for grid cards */
+    min-height: 120px; /* Much smaller height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Much smaller team member grid */
+  .main-dashboard-container .grid.grid-cols-2 .glass-card,
+  .main-dashboard-container .grid.md\\:grid-cols-3 .glass-card {
+    padding: 0.875rem 0.75rem; /* Much smaller padding for team cards */
+    min-height: 100px; /* Much smaller height */
+  }
+
+  /* Responsive behavior for row-based layout */
+  @media (max-width: 768px) {
+    .main-dashboard-container .project-actions-row {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .main-dashboard-container .project-action-card {
+      min-height: 240px;
+      padding: 1.5rem;
+    }
+    
+    .main-dashboard-container .team-collaboration-section {
+      padding: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main-dashboard-container .project-actions-row {
+      gap: 1rem;
+    }
+    
+    .main-dashboard-container .project-action-card {
+      min-height: 220px;
+      padding: 1.25rem;
+    }
+  }
+
+  /* Consistent section spacing */
+  .main-dashboard-container .section-spacing {
+    margin-bottom: 3rem; /* 48px spacing between sections */
+  }
+
+  .main-dashboard-container .section-spacing:last-child {
+    margin-bottom: 0; /* Remove margin from last section */
+  }
+
+  /* Ensure main dashboard container has proper spacing */
+  .main-dashboard-container {
+    max-width: 90%; /* Reduce to 90% to give more breathing room */
+    margin: 0 auto;
+    padding-left: 3rem; /* Increase left padding for better balance */
+    padding-right: 4rem; /* Even more right padding for horizontal scroll */
+    overflow-x: hidden;
+  }
+
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 1024px) {
+    .main-dashboard-container {
+      max-width: 88%; /* Slightly larger on tablets */
+      padding-left: 2rem; /* Better left padding on tablets */
+      padding-right: 3rem; /* Better right padding on tablets */
+    }
+    .commit-horizontal-scroll {
+      padding-left: 0.75rem; /* Adjust horizontal scroll left padding for tablets */
+      padding-right: 1.5rem; /* Adjust horizontal scroll padding for tablets */
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-dashboard-container {
+      max-width: 92%; /* Even larger on mobile for better usability */
+      padding-left: 1.5rem; /* Better left padding on mobile */
+      padding-right: 2.5rem; /* Better right padding on mobile */
+    }
+    .commit-horizontal-scroll {
+      padding-left: 0.5rem; /* Adjust horizontal scroll left padding for mobile */
+      padding-right: 1.25rem; /* Adjust horizontal scroll padding for mobile */
+    }
+  }
+
+  @media (max-width: 480px) {
+    .main-dashboard-container {
+      max-width: 95%; /* Almost full width on very small screens */
+      padding-left: 1.25rem; /* Better left padding even on small screens */
+      padding-right: 2rem; /* Better right padding even on small screens */
+    }
+    .commit-horizontal-scroll {
+      padding-left: 0.25rem; /* Adjust horizontal scroll left padding for small screens */
+      padding-right: 1rem; /* Adjust horizontal scroll padding for small screens */
+    }
+
+    /* Reduce scaling on very small screens to prevent overflow */
+    .main-dashboard-container .glass-card {
+      transform: scale(1.05); /* Reduced scale for mobile */
+    }
+
+    .main-dashboard-container .team-member-card,
+    .main-dashboard-container .add-member-card {
+      transform: scale(1.08); /* Reduced scale for team cards on mobile */
+    }
+  }
+
+  /* Responsive scaling adjustments */
+  @media (max-width: 768px) {
+    /* Maintain larger scaling on tablets */
+    .main-dashboard-container .glass-card {
+      transform: scale(1.08); /* Maintain larger scale for tablets */
+    }
+
+    .main-dashboard-container .team-member-card,
+    .main-dashboard-container .add-member-card {
+      transform: scale(1.1); /* Maintain larger scale for team cards on tablets */
+      padding: 2rem; /* Keep generous padding on tablets */
+      min-height: 200px; /* Keep good height on tablets */
+    }
+
+    .main-dashboard-container .grid .glass-card {
+      transform: scale(1.05); /* Maintain good scale for grid cards on tablets */
+    }
+
+    /* Team members grid on tablets */
+    .main-dashboard-container .team-members-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem; /* Slightly smaller gap on tablets */
+    }
+
+    /* Team collaboration header on tablets */
+    .main-dashboard-container .team-collaboration-section h2 {
+      font-size: 1.5rem; /* Slightly smaller title on tablets */
+    }
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 480px) {
+    /* Team member cards on mobile - maintain good size */
+    .main-dashboard-container .team-member-card,
+    .main-dashboard-container .add-member-card {
+      transform: scale(1.05); /* Maintain good scaling on mobile */
+      padding: 1.75rem; /* Keep decent padding on mobile */
+      min-height: 180px; /* Keep good height on mobile */
+    }
+
+    /* Team members grid on mobile */
+    .main-dashboard-container .team-members-grid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+      gap: 1.5rem; /* Keep decent gap on mobile */
+    }
+
+    /* Team collaboration header on mobile */
+    .main-dashboard-container .team-collaboration-section h2 {
+      font-size: 1.5rem; /* Keep decent title size on mobile */
+    }
+
+    .main-dashboard-container .team-collaboration-section p {
+      font-size: 1rem; /* Keep decent subtitle size on mobile */
+    }
+
+    /* Avatar and icon sizes on mobile */
+    .main-dashboard-container .team-member-card .avatar,
+    .main-dashboard-container .add-member-card .add-icon {
+      width: 3rem; /* Keep decent avatar size on mobile */
+      height: 3rem;
+    }
   }
   
   /* All max-width containers use full width */
@@ -798,4 +1817,213 @@ a:hover {
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* Commit Intelligence specific styles */
+.commit-intelligence-card {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.commit-intelligence-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(34, 197, 94, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.commit-type-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.commit-type-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.commit-type-badge:hover::before {
+  left: 100%;
+}
+
+.ai-insight-glow {
+  position: relative;
+}
+
+.ai-insight-glow::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #22c55e, #3b82f6, #8b5cf6, #f59e0b);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ai-insight-glow:hover::before {
+  opacity: 0.3;
+}
+
+.commit-stats-card {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.commit-stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6, #8b5cf6);
+}
+
+.floating-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.6);
+  }
+}
+
+.commit-message-gradient {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-left: 3px solid #22c55e;
+}
+
+.ai-summary-card {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.1);
+  position: relative;
+}
+
+.ai-summary-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #22c55e, #3b82f6);
+}
+
+.filter-controls {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.tab-active {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.commit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .commit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.commit-list-item {
+  transition: all 0.3s ease;
+}
+
+.commit-list-item:hover {
+  transform: translateX(8px);
+  border-left-color: #22c55e;
+}
+
+.impact-high {
+  color: #ef4444;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.impact-medium {
+  color: #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.impact-low {
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.confidence-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.confidence-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
 }

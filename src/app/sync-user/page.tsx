@@ -33,7 +33,6 @@ const SyncUser = async () => {
       imageUrl: user.imageUrl,
       firstName: user.firstName,
       lastName: user.lastName,
-      credits: 150, // default if new user
     },
   });
 

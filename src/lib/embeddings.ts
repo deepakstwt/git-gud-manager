@@ -23,7 +23,7 @@ export async function getGeminiClient(): Promise<GoogleGenerativeAI> {
 export async function summarizeDocument(content: string, fileName?: string): Promise<string> {
   try {
     const genAI = await getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const prompt = `
 You are an expert code analyst. Provide a concise, technical summary of this file that will be useful for a RAG (Retrieval Augmented Generation) system.
@@ -130,7 +130,7 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 export async function generateRAGAnswer(question: string, context: string[]): Promise<string> {
   try {
     const genAI = await getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const contextText = context.join('\n\n---\n\n');
     
