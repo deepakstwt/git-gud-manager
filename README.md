@@ -24,17 +24,7 @@
 ### 🚀 **Project Overview**
 ![Project Overview](screenshots/Project.jpeg)
 
-### 🎯 **Dashboard Overview**
-![Dashboard Screenshot](screenshots/dashboard-overview.png)
 
-### 👥 **Team Collaboration Section**
-![Team Collaboration](screenshots/team-collaboration.png)
-
-### 🤖 **AI Code Assistant**
-![AI Assistant](screenshots/ai-assistant.png)
-
-### 📊 **Commit Intelligence**
-![Commit Intelligence](screenshots/commit-intelligence.png)
 
 
 ---
