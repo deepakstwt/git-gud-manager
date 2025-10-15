@@ -21,6 +21,10 @@
 
 
 
+### 🎯 **Dashboard Overview**
+![Dashboard Screenshot](screenshots/dashboard-overview.png)
+
+
 ---
 
 ## ✨ Features
