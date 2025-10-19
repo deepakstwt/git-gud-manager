@@ -21,7 +21,6 @@ import {
   Plus,
   Menu,
   X,
-  Brain,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -36,11 +35,6 @@ const items = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Commit Intelligence",
-    url: "/commit-intelligence",
-    icon: Brain,
   },
   {
     title: "Q&A",
@@ -86,11 +80,11 @@ export function AppSidebar() {
     <Sidebar 
       collapsible="icon" 
       variant="sidebar" 
-      className="!border-0 mt-24 ml-4"
+      className="!border-0 mt-4 ml-6 mr-4"
     >
       <div className={cn(
-        "h-[calc(100vh-6rem)] glass-card !rounded-2xl !border-0 overflow-hidden transition-all duration-300 ease-in-out",
-        open ? "w-64" : "w-16"
+        "h-[calc(100vh-2rem)] glass-card !rounded-2xl !border-0 overflow-hidden transition-all duration-300 ease-in-out",
+        open ? "w-64" : "w-20"
       )}>
         {/* Enhanced Ambient Sidebar Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-800/90 via-slate-700/80 to-slate-600/70" />
