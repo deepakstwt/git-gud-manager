@@ -31,7 +31,8 @@ import {
   FileText,
   Clock,
   Bot,
-  Zap
+  Zap,
+  BarChart3
 } from "lucide-react";
 import { InviteMemberModal } from "@/components/InviteMemberModal";
 import { ArchiveProjectModal } from "@/components/ArchiveProjectModal";
@@ -571,7 +572,7 @@ const handleQuestionSaved = () => {
 
   return (
     <>
-    <div className="relative w-full min-h-screen main-dashboard-container">
+    <div className="relative w-full min-h-screen main-dashboard-container px-4 md:px-6 lg:px-8">
       {/* Flyhyer-Inspired Ambient Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-background" />
@@ -593,13 +594,13 @@ const handleQuestionSaved = () => {
 
       <div className="relative space-y-12 w-full">
         {/* Flyhyer-Style Hero Section */}
-        <div className="hero-section">
+        <div className="hero-section bg-black rounded-3xl p-8 md:p-12 border border-white/10">
           <div className="relative z-10 space-y-8">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card border-0 mb-6">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-black border border-white/10 mb-6">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-secondary p-2 flex items-center justify-center">
                 <div className="w-full h-full bg-white rounded-sm opacity-90" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              <span className="text-sm font-medium text-white uppercase tracking-wider">
                 Project Dashboard
               </span>
             </div>
@@ -611,7 +612,7 @@ const handleQuestionSaved = () => {
                 </span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
+              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto font-light leading-relaxed">
                 Experience next-generation project management with AI-powered insights, 
                 intelligent code analysis, and seamless team collaboration.
               </p>
@@ -622,53 +623,69 @@ const handleQuestionSaved = () => {
                   <div className="text-3xl font-bold text-primary mb-1">
                     {teamMembersLoading ? '...' : teamMembers.length}
                   </div>
-                  <div className="text-sm text-muted-foreground uppercase tracking-wider">Team Members</div>
+                  <div className="text-sm text-gray-400 uppercase tracking-wider">Team Members</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-secondary mb-1">AI</div>
-                  <div className="text-sm text-muted-foreground uppercase tracking-wider">Powered</div>
+                  <div className="text-sm text-gray-400 uppercase tracking-wider">Powered</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-accent mb-1">24/7</div>
-                  <div className="text-sm text-muted-foreground uppercase tracking-wider">Monitoring</div>
+                  <div className="text-sm text-gray-400 uppercase tracking-wider">Monitoring</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        {/* Luxury Repository Status */}
+        {/* Repository Connected - Match Project Dashboard Background */}
         {project.githubUrl && (
-          <div className="luxury-card w-full">
-            <div className="flex items-center gap-6">
-              <div className="relative flex-shrink-0">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
-                  <Github className="w-8 h-8 text-primary" />
-                </div>
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg">
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-              </div>
-              
-              <div className="flex-1 space-y-3">
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Repository Connected</h3>
-                <a 
-                  href={project.githubUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 text-muted-foreground transition-colors duration-300 group"
-                  >
-                    <span className="font-mono text-lg">{project.githubUrl.replace('https://github.com/', '')}</span>
-                    <ExternalLink className="w-5 h-5 transition-transform duration-300" />
-                  </a>
+          <div className="relative w-full rounded-2xl overflow-hidden" style={{
+            background: 'linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%)',
+            boxShadow: `
+              inset 0 1px 0 rgba(255, 255, 255, 0.1),
+              inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+              0 20px 40px rgba(0, 0, 0, 0.3),
+              0 8px 16px rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.08)
+            `,
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            {/* Soft Inner Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/3 pointer-events-none" />
+            
+            {/* Content */}
+            <div className="relative z-10 p-12">
+              <div className="flex items-center gap-8">
+                <div className="relative flex-shrink-0">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30 shadow-lg">
+                    <Github className="w-10 h-10 text-primary" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                    <span className="text-emerald-400 font-medium text-sm">Live Sync Active</span>
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-white mb-3">Repository Connected</h3>
+                    <a 
+                      href={project.githubUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-3 text-slate-300 hover:text-white transition-colors duration-300 group"
+                    >
+                      <span className="font-mono text-xl">{project.githubUrl.replace('https://github.com/', '')}</span>
+                      <ExternalLink className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+                    </a>
                   </div>
-                  <div className="px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20">
-                    <span className="text-blue-400 font-medium text-sm">AI Enhanced</span>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="px-6 py-3 rounded-full bg-emerald-500/20 border border-emerald-500/30 shadow-lg">
+                      <span className="text-emerald-300 font-medium text-base">Live Sync Active</span>
+                    </div>
+                    <div className="px-6 py-3 rounded-full bg-blue-500/20 border border-blue-500/30 shadow-lg">
+                      <span className="text-blue-300 font-medium text-base">AI Enhanced</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -676,144 +693,212 @@ const handleQuestionSaved = () => {
           </div>
         )}
 
-        {/* Team Collaboration Section - Full Width Row */}
+        {/* Team Collaboration Section - Redesigned */}
         <div className="w-full mb-12">
-          <div className="team-collaboration-section luxury-card">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
-                      <Users className="w-6 h-6 text-primary" />
+          <div className="luxury-card w-full">
+            <div className="p-8">
+              {/* Header Section */}
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-8">
+                <div className="space-y-4 flex-1">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center border border-blue-400/30 shadow-lg">
+                        <Users className="w-7 h-7 text-blue-400" />
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-slate-900 animate-pulse"></div>
                     </div>
-                  <div>
-                      <h2 className="text-3xl font-bold text-foreground">Team Collaboration</h2>
-                      <div className="flex items-center gap-2 mt-1">
+                    <div>
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+                        Team Collaboration
+                      </h2>
+                      <div className="flex items-center gap-2 mt-2">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-sm text-green-600 font-medium">Active Team</span>
+                        <span className="text-sm font-medium text-green-400">Active Team</span>
+                        <div className="w-1 h-1 rounded-full bg-slate-500 mx-2"></div>
+                        <span className="text-sm text-slate-400">{teamMembers.length} members</span>
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-muted-foreground text-lg">Build, collaborate, and innovate together</p>
-                    <p className="text-sm text-muted-foreground/80">Invite talented developers, designers, and contributors to join your project journey</p>
-                  </div>
-                  </div>
                   
-                  <Button 
-                    onClick={inviteTeamMember}
-                  className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white shadow-lg hover:shadow-xl rounded-xl h-14 px-8 transition-all duration-200 group"
-                  >
-                  <UserPlus className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                  <span className="font-semibold">Invite Member</span>
-                  </Button>
+                  <div className="space-y-2 max-w-2xl">
+                    <p className="text-lg font-medium text-slate-200">
+                      Build, collaborate, and innovate together
+                    </p>
+                    <p className="text-slate-400 leading-relaxed">
+                      Invite talented developers, designers, and contributors to join your project journey. 
+                      Work seamlessly with your team to create amazing things.
+                    </p>
+                  </div>
                 </div>
                 
-                {/* Team Members Grid */}
-                <div className="team-members-grid">
-                  {teamMembersLoading ? (
-                    // Loading state for team members
-                    Array.from({ length: 3 }).map((_, index) => (
-                      <div key={index} className="glass-card team-member-card rounded-2xl p-6 border-0 text-center animate-pulse">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/20"></div>
-                        <div className="h-4 bg-muted/20 rounded w-3/4 mx-auto mb-2"></div>
-                        <div className="h-3 bg-muted/20 rounded w-1/2 mx-auto"></div>
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center lg:items-start lg:pt-2">
+                  <Button 
+                    onClick={inviteTeamMember}
+                    className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 border-0 text-white shadow-xl hover:shadow-2xl rounded-2xl h-14 px-8 transition-all duration-300 transform hover:scale-105 min-w-[180px]"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <UserPlus className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                    <span className="font-semibold text-base">Invite Member</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="border-slate-600/50 text-slate-300 hover:bg-slate-800/50 hover:border-slate-500 rounded-2xl h-14 px-6 transition-all duration-200 min-w-[140px]"
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    View All
+                  </Button>
+                </div>
+              </div>
+                
+              {/* Team Members Section */}
+              <div className="space-y-6">
+                {teamMembersLoading ? (
+                  // Loading state for team members
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="relative group">
+                        <div className="backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 animate-pulse min-w-[320px]" style={{
+                          background: 'linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%)'
+                        }}>
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 rounded-xl bg-slate-700/50"></div>
+                            <div className="flex-1 space-y-2">
+                              <div className="h-4 bg-slate-700/50 rounded w-3/4"></div>
+                              <div className="h-3 bg-slate-700/50 rounded w-1/2"></div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    ))
-                  ) : teamMembers.length === 0 ? (
-                    // Empty state
-                    <div className="col-span-full text-center py-16">
-                      <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
-                        <Users className="w-10 h-10 text-primary" />
+                    ))}
+                  </div>
+                ) : teamMembers.length === 0 ? (
+                  // Empty state
+                  <div className="text-center py-16">
+                    <div className="relative mx-auto w-24 h-24 mb-8">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl"></div>
+                      <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 flex items-center justify-center border border-blue-400/30">
+                        <Users className="w-12 h-12 text-blue-400" />
                       </div>
-                      <div className="space-y-4">
-                        <h3 className="text-2xl font-bold text-foreground">Build Your Dream Team</h3>
-                        <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                    </div>
+                    <div className="space-y-6 max-w-md mx-auto">
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-3">
+                          Build Your Dream Team
+                        </h3>
+                        <p className="text-slate-400 leading-relaxed">
                           Every great project starts with great people. Invite talented developers, designers, and contributors to join your journey.
                         </p>
-                        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span>Collaborate</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                            <span>Innovate</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                            <span>Create</span>
-                          </div>
-                        </div>
                       </div>
-                      <Button 
-                        onClick={inviteTeamMember}
-                        className="magnetic-button bg-gradient-to-r from-primary to-secondary border-0 text-white mt-8 h-12 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                      >
-                        <UserPlus className="w-5 h-5 mr-2" />
-                        <span className="font-semibold">Invite First Member</span>
-                      </Button>
-                    </div>
-                  ) : (
-                    teamMembers.map((member, index) => (
-                    <div key={member.id} className="glass-card team-member-card cursor-pointer group">
-                      <div className="status"></div>
-                      <div className="avatar">
-                        <Avatar className="w-full h-full">
-                <AvatarImage src={member.avatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white font-bold text-lg">
-                  {member.initials}
-                </AvatarFallback>
-              </Avatar>
+                      
+                      <div className="flex items-center justify-center gap-6 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <span className="text-slate-300">Collaborate</span>
                         </div>
-                      <div className="space-y-2">
-                      <h4 className="name">{member.name}</h4>
-                      <p className="role">Team Member</p>
-                        <div className="flex items-center justify-center gap-2 mt-3">
-                          <div className="flex items-center gap-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                            <span className="text-xs text-green-600 font-medium">Active</span>
-                          </div>
-                          <div className="w-1 h-1 rounded-full bg-muted-foreground/40"></div>
-                          <span className="text-xs text-muted-foreground">Contributor</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                          <span className="text-slate-300">Innovate</span>
                         </div>
-                      </div>
-                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs text-primary font-bold">#{index + 1}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                          <span className="text-slate-300">Create</span>
                         </div>
-                      </div>
-                      </div>
-                    ))
-                  )}
-                  
-                  {/* Add Member Card */}
-                  <button 
-                    onClick={inviteTeamMember}
-                    className="glass-card add-member-card cursor-pointer group"
-                  >
-                    <div className="add-icon group-hover:scale-110 transition-transform duration-300">
-                      <UserPlus className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="space-y-2">
-                    <h4 className="add-text">Add Member</h4>
-                    <p className="add-subtitle">Invite to team</p>
-                      <div className="flex items-center justify-center gap-2 mt-3">
-                        <div className="flex items-center gap-1">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
-                          <span className="text-xs text-primary font-medium">Ready</span>
-                        </div>
-                        <div className="w-1 h-1 rounded-full bg-muted-foreground/40"></div>
-                        <span className="text-xs text-muted-foreground">Invite</span>
                       </div>
                     </div>
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="text-xs text-primary font-bold">+</span>
+                    
+                    <Button 
+                      onClick={inviteTeamMember}
+                      className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 border-0 text-white mt-8 h-14 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <UserPlus className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                      <span className="font-semibold text-base">Invite First Member</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {teamMembers.map((member, index) => (
+                      <div key={member.id} className="group relative">
+                        <div className="relative backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 min-w-[320px]" style={{
+                          background: 'linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%)'
+                        }}>
+                          {/* Status indicator */}
+                          <div className="absolute top-4 right-4">
+                            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-4">
+                            <div className="relative">
+                              <Avatar className="w-12 h-12 rounded-xl border-2 border-slate-600/50">
+                                <AvatarImage src={member.avatar} />
+                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-bold text-sm">
+                                  {member.initials}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-slate-200 truncate group-hover:text-white transition-colors">
+                                {member.name}
+                              </h4>
+                              <p className="text-sm text-slate-400 truncate">
+                                Team Member
+                              </p>
+                              <div className="flex items-center gap-3 mt-2">
+                                <div className="flex items-center gap-1">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                  <span className="text-xs text-green-400 font-medium">Active</span>
+                                </div>
+                                <div className="w-1 h-1 rounded-full bg-slate-500"></div>
+                                <span className="text-xs text-slate-500">Contributor</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Hover effect overlay */}
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Add Member Card */}
+                    <div className="group relative">
+                      <div className="relative backdrop-blur-sm rounded-2xl p-8 border-2 border-dashed border-slate-600/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 cursor-pointer min-w-[320px]" style={{
+                        background: 'linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%)'
+                      }}>
+                        <div className="flex items-center space-x-4">
+                          <div className="relative">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-400/30 group-hover:scale-110 transition-transform duration-200">
+                              <UserPlus className="w-6 h-6 text-blue-400" />
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-slate-200 group-hover:text-white transition-colors truncate">
+                              Add Member
+                            </h4>
+                            <p className="text-sm text-slate-400 truncate">
+                              Invite to team
+                            </p>
+                            <div className="flex items-center gap-3 mt-2">
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                                <span className="text-xs text-blue-400 font-medium">Ready</span>
+                              </div>
+                              <div className="w-1 h-1 rounded-full bg-slate-500"></div>
+                              <span className="text-xs text-slate-500">Invite</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Hover effect overlay */}
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       </div>
                     </div>
-                  </button>
-                </div>
+                  </div>
+                )}
+              </div>
               </div>
                 </div>
               </div>
@@ -922,7 +1007,7 @@ const handleQuestionSaved = () => {
               </div>
               
               <div className="relative group">
-                <div className="glass-card rounded-3xl p-8 border-0 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group-hover:scale-[1.02]">
+                <div className="luxury-card rounded-3xl p-8 border-0 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group-hover:scale-[1.02]">
                   <AICodeAssistantCard />
                 </div>
                 {/* Enhanced floating accent elements */}
@@ -985,7 +1070,7 @@ const handleQuestionSaved = () => {
                   </div>
 
                   {meetingFile && (
-                    <div className="glass-card rounded-2xl p-6 border-0 bg-emerald-500/10">
+                    <div className="luxury-card rounded-2xl p-6 border-0 bg-emerald-500/10">
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
                           <FileText className="w-8 h-8 text-emerald-400" />
@@ -1023,21 +1108,65 @@ const handleQuestionSaved = () => {
 
           <div className="space-y-8">
             {/* Commit Intelligence - Full Width */}
-            <div className="commit-intelligence-section">
-              <div className="commit-intelligence-header">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center border border-emerald-500/30 shadow-lg">
-                    <Github className="w-8 h-8 text-emerald-400" />
+            <div className="luxury-card w-full">
+              <div className="p-8">
+                {/* Header Section - Same as Team Collaboration */}
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-8">
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-green-500/20 to-teal-500/20 flex items-center justify-center border border-emerald-400/30 shadow-lg">
+                          <Github className="w-7 h-7 text-emerald-400" />
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900 animate-pulse"></div>
+                      </div>
+                      <div>
+                        <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-green-100 bg-clip-text text-transparent">
+                          Commit Intelligence
+                        </h2>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <span className="text-sm font-medium text-emerald-400">AI Analysis Active</span>
+                          <div className="w-1 h-1 rounded-full bg-slate-500 mx-2"></div>
+                          <span className="text-sm text-slate-400">Real-time insights</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 max-w-2xl">
+                      <p className="text-lg font-medium text-slate-200">
+                        AI-powered commit analysis and insights
+                      </p>
+                      <p className="text-slate-400 leading-relaxed">
+                        Get intelligent analysis of your commits with AI-powered insights, 
+                        code quality metrics, and automated summaries to improve your development workflow.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">Commit Intelligence</h3>
-                    <p className="text-muted-foreground text-lg">AI-powered commit analysis and insights</p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center lg:items-start lg:pt-2">
+                    <Button 
+                      className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-500 hover:via-green-500 hover:to-teal-500 border-0 text-white shadow-xl hover:shadow-2xl rounded-2xl h-14 px-8 transition-all duration-300 transform hover:scale-105 min-w-[180px]"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <Github className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                      <span className="font-semibold text-base">View Analysis</span>
+                    </Button>
+                    
+                    <Button 
+                      variant="outline"
+                      className="border-slate-600/50 text-slate-300 hover:bg-slate-800/50 hover:border-slate-500 rounded-2xl h-14 px-6 transition-all duration-200 min-w-[140px]"
+                    >
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      View Reports
+                    </Button>
                   </div>
                 </div>
-              </div>
-              
-              <div className="commit-intelligence-content">
-                <CommitIntelligenceDashboard projectId={project.id} projectName={project.name} />
+                
+                {/* Commit Intelligence Content */}
+                <div className="space-y-6">
+                  <CommitIntelligenceDashboard projectId={project.id} projectName={project.name} />
+                </div>
               </div>
             </div>
 
@@ -1054,7 +1183,7 @@ const handleQuestionSaved = () => {
                   </div>
                 </div>
 
-                <div className="glass-card rounded-2xl p-6 border-0">
+                <div className="luxury-card rounded-2xl p-6 border-0">
                   <RepositoryLoader />
                 </div>
               </div>
@@ -1073,66 +1202,6 @@ const handleQuestionSaved = () => {
           projectName={project.name}
         />
       </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Project Metadata - Elegant Footer */}
-        <div className="w-full mt-12">
-          <div className="luxury-card">
-            <div className="text-center space-y-8">
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-foreground">Project Metadata</h3>
-                <p className="text-muted-foreground">Essential project information and statistics</p>
-      </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30">
-                    <Hash className="w-8 h-8 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-2">Project ID</h4>
-                    <div className="glass-card rounded-xl p-4 border-0">
-                      <code className="text-sm font-mono text-primary break-all">
-                {project.id}
-              </code>
-            </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center border border-secondary/30">
-                    <Calendar className="w-8 h-8 text-secondary" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-2">Created</h4>
-                    <div className="glass-card rounded-xl p-4 border-0">
-                      <div className="text-sm font-medium">
-                {new Date(project.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center border border-accent/30">
-                    <Users className="w-8 h-8 text-accent" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground mb-2">Team Size</h4>
-                    <div className="glass-card rounded-xl p-4 border-0">
-                      <div className="text-sm font-medium">
-                        {teamMembersLoading ? '...' : teamMembers.length} active members
-                      </div>
-                    </div>
-                  </div>
-            </div>
-              </div>
             </div>
           </div>
         </div>

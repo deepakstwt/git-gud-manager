@@ -39,12 +39,12 @@ const SidebarLayout = ({ children }: Props) => {
 
       <AppSidebar />
       
-      <SidebarInset>
+      <SidebarInset className="ml-8 mr-8">
         {/* Top Navigation Header with Toggle */}
         <HeaderWithToggle />
 
-        {/* Main Content Area */}
-        <div className="p-4 pt-4 w-full">
+        {/* Main Content Area - Added pt-32 to account for fixed header */}
+        <div className="px-8 py-4 pt-32 w-full">
           <div className="glass-card rounded-3xl border-0 min-h-[calc(100vh-8rem)] overflow-hidden w-full">
             {/* Content Wrapper with Enhanced Padding */}
             <div className="relative">

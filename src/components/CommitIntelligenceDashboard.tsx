@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   GitCommit, 
   Users, 
@@ -80,6 +81,8 @@ export default function CommitIntelligenceDashboard({ projectId, projectName }: 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedCommits, setSelectedCommits] = useState<string[]>([]);
   const [isPolling, setIsPolling] = useState(false);
+  const [selectedCommit, setSelectedCommit] = useState<CommitData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Generate mock commits with real user data
   const generateMockCommits = (): CommitData[] => {
@@ -314,6 +317,11 @@ export default function CommitIntelligenceDashboard({ projectId, projectName }: 
     }
   };
 
+  const handleCommitClick = (commit: CommitData) => {
+    setSelectedCommit(commit);
+    setIsModalOpen(true);
+  };
+
   const filteredCommits = displayCommits.filter(commit => {
     const matchesSearch = commit.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          commit.author.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -356,343 +364,266 @@ export default function CommitIntelligenceDashboard({ projectId, projectName }: 
     }
   };
 
+         // Detailed Commit View Component
+         const CommitDetailView = ({ commit }: { commit: CommitData }) => (
+           <div className="space-y-6">
+             {/* Header Section */}
+             <div className="border-b border-white/10 pb-6">
+               <div className="flex items-start justify-between mb-4">
+                 <div className="flex items-center space-x-4">
+                   <Avatar className="w-12 h-12">
+                     <AvatarImage src={commit.author.avatar} />
+                     <AvatarFallback className="bg-gradient-to-br from-green-400 to-blue-500 text-white text-sm">
+                       {commit.author.name.split(' ').map(n => n[0]).join('')}
+                     </AvatarFallback>
+                   </Avatar>
+                   <div>
+                     <h3 className="text-xl font-bold text-white">{commit.author.name}</h3>
+                     <p className="text-sm text-slate-400">{new Date(commit.date).toLocaleDateString()}</p>
+                   </div>
+                 </div>
+                 <Badge className={`${getCommitTypeColor(commit.aiInsights.type)} text-sm px-3 py-1`}>
+                   {commit.aiInsights.type}
+                 </Badge>
+               </div>
+               
+               <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                 <h4 className="text-base font-semibold text-white mb-2">Commit Message</h4>
+                 <p className="text-slate-300 text-base leading-relaxed">{commit.message}</p>
+               </div>
+             </div>
+
+             {/* AI Summary Section */}
+             <div className="space-y-4">
+               <div className="flex items-center space-x-3">
+                 <Brain className="w-5 h-5 text-blue-400" />
+                 <h4 className="text-lg font-semibold text-white">AI Summary</h4>
+                 <div className="flex items-center space-x-2">
+                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                   <span className="text-sm text-green-400 font-medium">AI</span>
+                 </div>
+               </div>
+               
+               <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-5 border border-blue-500/20">
+                 <p className="text-slate-200 text-base leading-relaxed">{commit.aiSummary}</p>
+               </div>
+             </div>
+
+             {/* Statistics Section */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700">
+                 <h5 className="text-sm font-medium text-slate-400 mb-3">Code Changes</h5>
+                 <div className="space-y-2">
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Added</span>
+                     <span className="text-green-400 font-semibold">+{commit.additions}</span>
+                   </div>
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Deleted</span>
+                     <span className="text-red-400 font-semibold">-{commit.deletions}</span>
+                   </div>
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Files</span>
+                     <span className="text-blue-400 font-semibold">{commit.filesChanged}</span>
+                   </div>
+                 </div>
+               </div>
+
+               <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700">
+                 <h5 className="text-sm font-medium text-slate-400 mb-3">Impact</h5>
+                 <div className="space-y-2">
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Level</span>
+                     <Badge className={`${getImpactColor(commit.aiInsights.impact)} border-current text-sm px-2 py-1`}>
+                       {commit.aiInsights.impact}
+                     </Badge>
+                   </div>
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Confidence</span>
+                     <span className="text-blue-400 font-semibold">
+                       {Math.round(commit.aiInsights.confidence * 100)}%
+                     </span>
+                   </div>
+                 </div>
+               </div>
+
+               <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700">
+                 <h5 className="text-sm font-medium text-slate-400 mb-3">Details</h5>
+                 <div className="space-y-2">
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Hash</span>
+                     <code className="text-sm text-slate-400 bg-slate-900 px-2 py-1 rounded">
+                       {commit.hash.substring(0, 7)}
+                     </code>
+                   </div>
+                   <div className="flex justify-between text-sm">
+                     <span className="text-slate-300">Date</span>
+                     <span className="text-slate-300 text-sm">
+                       {new Date(commit.date).toLocaleDateString()}
+                     </span>
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+             {/* Tags Section */}
+             {commit.aiInsights.tags.length > 0 && (
+               <div className="space-y-3">
+                 <h5 className="text-sm font-medium text-slate-400">Tags</h5>
+                 <div className="flex flex-wrap gap-2">
+                   {commit.aiInsights.tags.map((tag, index) => (
+                     <Badge key={index} variant="outline" className="text-sm text-slate-400 border-slate-600 px-3 py-1">
+                       {tag}
+                     </Badge>
+                   ))}
+                 </div>
+               </div>
+             )}
+
+             {/* Pull Request Section */}
+             {commit.pullRequest && (
+               <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                 <div className="flex items-center justify-between">
+                   <div className="flex items-center space-x-3">
+                     <GitPullRequest className="w-5 h-5 text-blue-400" />
+                     <span className="text-slate-300 text-base">PR #{commit.pullRequest.number}</span>
+                   </div>
+                   <Button size="sm" variant="outline" className="border-blue-400 text-blue-400 hover:bg-blue-400/10 text-sm px-3 py-2">
+                     <ExternalLink className="w-4 h-4 mr-2" />
+                     View
+                   </Button>
+                 </div>
+               </div>
+             )}
+    </div>
+  );
+
   return (
     <div className="commit-intelligence-dashboard">
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Simple Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="commit-stats-card">
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-400 font-medium">Total Commits</p>
-                  <p className="text-3xl font-bold text-white">{displayCommits.length}</p>
+                <p className="text-sm text-slate-400">Total Commits</p>
+                <p className="text-2xl font-bold text-white">{displayCommits.length}</p>
               </div>
-              <GitCommit className="w-8 h-8 text-green-400 floating-animation" />
+              <GitCommit className="w-6 h-6 text-green-400" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="commit-stats-card">
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-400 font-medium">AI Insights</p>
-                <p className="text-3xl font-bold text-white">98%</p>
+                <p className="text-sm text-slate-400">AI Analysis</p>
+                <p className="text-2xl font-bold text-white">Active</p>
               </div>
-              <Brain className="w-8 h-8 text-blue-400 pulse-glow" />
+              <Brain className="w-6 h-6 text-blue-400" />
             </div>
           </CardContent>
         </Card>
 
         <Card className="commit-stats-card">
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-400 font-medium">Code Quality</p>
-                <p className="text-3xl font-bold text-white">A+</p>
+                <p className="text-sm text-slate-400">Project</p>
+                <p className="text-lg font-bold text-white truncate">{projectName || 'Selected'}</p>
               </div>
-              <Star className="w-8 h-8 text-purple-400 floating-animation" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="commit-stats-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-orange-400 font-medium">Active Branches</p>
-                <p className="text-3xl font-bold text-white">3</p>
-              </div>
-              <GitBranch className="w-8 h-8 text-orange-400 floating-animation" />
+              <Github className="w-6 h-6 text-purple-400" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Project Header */}
-      <div className="mb-6 p-4 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-xl border border-emerald-500/20">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-            <Github className="w-5 h-5 text-emerald-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">
-              Commits for: <span className="text-emerald-400">{projectName || 'Selected Project'}</span>
-            </h3>
-            <p className="text-sm text-slate-300">
-              Project ID: <code className="bg-slate-800 px-2 py-1 rounded text-xs">{projectId}</code>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters and Controls */}
-      <Card className="filter-controls">
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
+      {/* Simple Search */}
+      <div className="mb-6">
+        <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <Input
-                  placeholder="Search commits, authors, or messages..."
+            placeholder="Search commits..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 search-input text-white placeholder:text-slate-400"
+            className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-slate-400"
                 />
               </div>
-              
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-48 bg-white/5 border-white/10 text-white">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-white/10">
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="feature">Features</SelectItem>
-                  <SelectItem value="bugfix">Bug Fixes</SelectItem>
-                  <SelectItem value="refactor">Refactors</SelectItem>
-                  <SelectItem value="docs">Documentation</SelectItem>
-                  <SelectItem value="test">Tests</SelectItem>
-                  <SelectItem value="chore">Chores</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48 bg-white/5 border-white/10 text-white">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-white/10">
-                  <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="impact">Impact</SelectItem>
-                  <SelectItem value="confidence">Confidence</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={handlePollCommits}
-                disabled={isPolling}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${isPolling ? 'animate-spin' : ''}`} />
-                {isPolling ? 'Polling...' : 'Poll Commits'}
-              </Button>
-              
-              <Button
-                variant={viewMode === "grid" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className={viewMode === "grid" ? "bg-green-500 hover:bg-green-600" : "border-white/20 text-white hover:bg-white/10"}
-              >
-                <BarChart3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                className={viewMode === "list" ? "bg-green-500 hover:bg-green-600" : "border-white/20 text-white hover:bg-white/10"}
-              >
-                <FileText className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Commits Display */}
-      <Tabs defaultValue="commits" className="space-y-6">
-        <TabsList className="bg-black/20 border-white/10">
-          <TabsTrigger value="commits" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
-            Recent Commits ({projectName || 'Project'})
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
-            Analytics
-          </TabsTrigger>
-          <TabsTrigger value="insights" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
-            AI Insights
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="commits" className="space-y-6">
-          {viewMode === "grid" ? (
-            <div className="commit-horizontal-scroll">
-              {sortedCommits.map((commit) => (
-                <Card key={commit.id} className="commit-intelligence-card group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3">
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage 
-                              src={commit.author.avatar} 
-                              alt={commit.author.name}
-                              onError={(e) => {
-                                console.log("Avatar load error for:", commit.author.avatar);
-                                console.log("Fallback to initials:", commit.author.name);
-                              }}
-                            />
-                            <AvatarFallback className="bg-gradient-to-br from-green-400 to-blue-500 text-white">
+      {/* Simple Commits List with Fixed Height and Scrolling */}
+      <div className="max-h-96 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+        {sortedCommits.map((commit) => (
+          <Card 
+            key={commit.id} 
+            className="commit-intelligence-card cursor-pointer"
+            onClick={() => handleCommitClick(commit)}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={commit.author.avatar} />
+                  <AvatarFallback className="bg-gradient-to-br from-green-400 to-blue-500 text-white text-xs">
                               {commit.author.name.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
-                        <div>
-                          <p className="font-semibold text-white">{commit.author.name}</p>
-                          <p className="text-sm text-slate-400">committed</p>
-                        </div>
-                      </div>
-                      <Badge className={`${getCommitTypeColor(commit.aiInsights.type)} commit-type-badge`}>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Badge className={`${getCommitTypeColor(commit.aiInsights.type)} text-xs`}>
                         {commit.aiInsights.type}
                       </Badge>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div>
-                      <p className="text-white font-medium mb-2 line-clamp-2">{commit.message}</p>
-                      <div className="flex items-center space-x-4 text-sm text-slate-400">
-                        <span className="flex items-center">
-                          <GitCommit className="w-4 h-4 mr-1" />
-                          {commit.hash.substring(0, 7)}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
+                    <span className="text-xs text-slate-400">
                           {new Date(commit.date).toLocaleDateString()}
                         </span>
-                      </div>
+                    <div className="flex items-center space-x-1 ml-auto">
+                      <Eye className="w-3 h-3 text-slate-400" />
+                      <span className="text-xs text-slate-400">Click to view details</span>
+                    </div>
                     </div>
 
-                    <div className="ai-summary-card rounded-lg p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-400">AI Summary</span>
-                        <div className="flex items-center space-x-1">
-                          <div className="w-2 h-2 bg-green-400 rounded-full pulse-glow"></div>
-                          <span className="text-xs text-green-400 font-medium">AI</span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-white line-clamp-3">{commit.aiSummary}</p>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm">
-                        <span className="text-green-400">+{commit.additions}</span>
-                        <span className="text-red-400">-{commit.deletions}</span>
-                        <span className="text-slate-400">{commit.filesChanged} files</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className={`text-xs ${getImpactColor(commit.aiInsights.impact)} border-current ai-insight-glow`}>
-                          {commit.aiInsights.impact} impact
-                        </Badge>
-                        <Badge variant="outline" className="text-xs text-blue-400 border-blue-400 ai-insight-glow">
-                          {Math.round(commit.aiInsights.confidence * 100)}% confidence
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {commit.pullRequest && (
-                      <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                        <div className="flex items-center space-x-2">
-                          <GitPullRequest className="w-4 h-4 text-blue-400" />
-                          <span className="text-sm text-blue-400">PR #{commit.pullRequest.number}</span>
-                        </div>
-                        <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 p-1">
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-
-                    <div className="flex flex-wrap gap-1">
-                      {commit.aiInsights.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs text-slate-400 border-slate-600">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sortedCommits.map((commit) => (
-                <Card key={commit.id} className="commit-intelligence-card commit-list-item">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4 flex-1">
-                        <Avatar className="w-12 h-12">
-                          <AvatarImage src={commit.author.avatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-green-400 to-blue-500 text-white">
-                            {commit.author.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 space-y-3">
-                          <div className="flex items-center space-x-3">
-                            <h3 className="text-lg font-semibold text-white">{commit.message}</h3>
-                            <Badge className={getCommitTypeColor(commit.aiInsights.type)}>
-                              {commit.aiInsights.type}
-                            </Badge>
-                          </div>
-                          
-                          <div className="flex items-center space-x-4 text-sm text-slate-400">
-                            <span className="flex items-center">
-                              <GitCommit className="w-4 h-4 mr-1" />
-                              {commit.hash.substring(0, 7)}
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="w-4 h-4 mr-1" />
-                              {new Date(commit.date).toLocaleDateString()}
-                            </span>
+                  <p className="text-white font-medium mb-2 line-clamp-2">{commit.message}</p>
+                  
+                  <div className="flex items-center space-x-4 text-xs text-slate-400">
                             <span className="text-green-400">+{commit.additions}</span>
                             <span className="text-red-400">-{commit.deletions}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className={`text-xs ${getImpactColor(commit.aiInsights.impact)} border-current`}>
-                          {commit.aiInsights.impact} impact
-                        </Badge>
-                        <Badge variant="outline" className="text-xs text-blue-400 border-blue-400">
-                          {Math.round(commit.aiInsights.confidence * 100)}% confidence
-                        </Badge>
+                    <span>{commit.filesChanged} files</span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+        
+        {/* Scroll indicator */}
+        {sortedCommits.length > 3 && (
+          <div className="text-center py-2 text-xs text-slate-400">
+            <div className="flex items-center justify-center space-x-1">
+              <div className="w-1 h-1 bg-slate-500 rounded-full animate-bounce"></div>
+              <div className="w-1 h-1 bg-slate-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+              <div className="w-1 h-1 bg-slate-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              <span className="ml-2">Scroll to see more commits</span>
             </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-white">Commit Analytics</CardTitle>
-              <CardDescription className="text-slate-400">Detailed analysis of commit patterns and trends</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-400">Analytics dashboard coming soon...</p>
+          </div>
+        )}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="insights" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-white">AI Insights</CardTitle>
-              <CardDescription className="text-slate-400">AI-powered analysis and recommendations</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Brain className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-400">AI insights dashboard coming soon...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+             {/* Commit Detail Modal */}
+             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+               <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+                 <DialogHeader className="px-8 pt-6 pb-4">
+                   <DialogTitle className="text-2xl font-bold text-white flex items-center space-x-3">
+                     <GitCommit className="w-6 h-6 text-green-400" />
+                     <span>Commit Details</span>
+                   </DialogTitle>
+                 </DialogHeader>
+                 
+                 <div className="px-8 pb-6">
+                   {selectedCommit && <CommitDetailView commit={selectedCommit} />}
+                 </div>
+               </DialogContent>
+             </Dialog>
     </div>
   );
 }

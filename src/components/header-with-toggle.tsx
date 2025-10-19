@@ -20,9 +20,9 @@ export function HeaderWithToggle() {
   const { open, toggleSidebar } = useSidebar();
 
   return (
-    <header className="sticky top-0 z-50 w-full">
-      <div className="m-4 mb-0">
-        <div className="glass-card rounded-2xl px-6 py-4 border-0">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300">
+      <div className={`mr-4 mt-4 mb-0 transition-all duration-300 ${open ? 'ml-[280px]' : 'ml-24'}`}>
+        <div className="glass-card rounded-2xl px-6 py-4 border-0 backdrop-blur-xl bg-slate-900/80">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               {/* Sidebar Toggle Button */}

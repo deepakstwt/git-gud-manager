@@ -485,12 +485,15 @@ a:hover {
     pointer-events: none;
   }
 
-  /* Luxury Cards */
+  /* Luxury Cards - Match Project Dashboard Background */
   .luxury-card {
-    background: var(--gradient-surface);
-    border: 1px solid rgba(var(--glass-border));
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1.5rem;
-    box-shadow: var(--shadow-subtle);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
     padding: 2rem;
     transition: all var(--duration-normal) var(--ease-spring);
     position: relative;
@@ -878,11 +881,11 @@ a:hover {
     transform: translateY(-4px);
   }
   
-  /* Enhanced Glass Card */
+  /* Enhanced Glass Card - Match Project Dashboard Background */
   .glass-card {
-    background: rgba(var(--glass-bg));
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
     backdrop-filter: blur(32px) saturate(200%);
-    border: 1px solid rgba(var(--glass-border));
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 
       0 8px 32px rgba(0, 0, 0, 0.12),
       0 2px 8px rgba(0, 0, 0, 0.08),
@@ -1003,11 +1006,11 @@ a:hover {
     margin-bottom: 3rem; /* Additional bottom margin for better spacing */
   }
 
-  /* Project Action Cards */
+  /* Project Action Cards - Match Project Dashboard Background */
   .main-dashboard-container .project-action-card {
-    background: hsl(var(--card) / 0.8);
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--border) / 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1.25rem;
     padding: 2rem;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1050,66 +1053,61 @@ a:hover {
     border-color: hsl(var(--border) / 0.5);
   }
 
-  /* Team collaboration section container */
+  /* Team collaboration section - Match Project Dashboard Background */
   .main-dashboard-container .team-collaboration-section {
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%);
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
     border-radius: 1.5rem;
-    padding: 2.5rem;
-    border: 1px solid hsl(var(--border) / 0.5);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
   }
 
-  /* Add subtle animated background elements */
-  .main-dashboard-container .team-collaboration-section::before {
+  /* Enhanced team member cards - Match Project Dashboard Background */
+  .main-dashboard-container .team-member-card {
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Add subtle glow effect on hover for team member cards */
+  .main-dashboard-container .team-member-card::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, hsl(var(--primary) / 0.03) 0%, transparent 70%);
-    animation: float 20s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
     pointer-events: none;
   }
 
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(30px, -30px) rotate(120deg); }
-    66% { transform: translate(-20px, 20px) rotate(240deg); }
+  .main-dashboard-container .team-member-card:hover::before {
+    opacity: 1;
   }
 
-  /* Team collaboration header */
-  .main-dashboard-container .team-collaboration-section h2 {
-    font-size: 2rem; /* Larger, more prominent title */
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    color: hsl(var(--foreground));
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--muted-foreground)) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .main-dashboard-container .team-collaboration-section p {
-    font-size: 1rem;
-    color: hsl(var(--muted-foreground));
-    margin-bottom: 2rem;
-    line-height: 1.6;
-    font-weight: 400;
-  }
-
-  /* Team members grid - modern centered layout */
-  .main-dashboard-container .team-members-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-    justify-items: center;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+  /* Hover effects for team member cards */
+  .main-dashboard-container .team-member-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.12),
+      0 8px 16px rgba(0, 0, 0, 0.08),
+      0 0 0 1px hsl(var(--border) / 0.3);
+    border-color: hsl(var(--border) / 0.5);
   }
 
   /* Individual team member card styling - modern minimalist */
@@ -1187,11 +1185,11 @@ a:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  /* Add member card - modern minimalist design */
+  /* Add member card - Match Project Dashboard Background */
   .main-dashboard-container .add-member-card {
-    background: hsl(var(--card) / 0.6);
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
     backdrop-filter: blur(20px);
-    border: 2px dashed hsl(var(--border) / 0.4);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 1.25rem;
     padding: 2rem;
     min-height: 200px;
@@ -1469,10 +1467,7 @@ a:hover {
 
   /* Stats Cards in Commit Intelligence */
   .commit-intelligence-dashboard .commit-stats-card {
-    background: linear-gradient(135deg, 
-      rgba(30, 30, 30, 0.95) 0%, 
-      rgba(40, 40, 40, 0.9) 50%,
-      rgba(30, 30, 30, 0.95) 100%);
+    background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     box-shadow: 
@@ -1820,7 +1815,7 @@ a:hover {
 
 /* Commit Intelligence specific styles */
 .commit-intelligence-card {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+  background: linear-gradient(135deg, hsl(222 25% 6%) 0%, hsl(222 20% 4%) 25%, hsl(222 25% 6%) 50%, hsl(222 20% 4%) 75%, hsl(222 25% 6%) 100%);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
